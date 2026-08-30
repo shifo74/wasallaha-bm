@@ -1455,7 +1455,31 @@ const firebaseConfig = {
       window.restaurantsData = [];
       window.currentRestaurantId = null;
       window.currentMerchantRestaurantId = null;
-      window.cart = [];
+
+      const CART_STORAGE_KEY = "waslha_bm_cart";
+
+      window.loadCartFromStorage = function () {
+        try {
+          const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+          if (!savedCart) return [];
+
+          const parsedCart = JSON.parse(savedCart);
+          return Array.isArray(parsedCart) ? parsedCart : [];
+        } catch (error) {
+          console.warn("Cart restore was skipped:", error);
+          return [];
+        }
+      };
+
+      window.saveCartToStorage = function () {
+        try {
+          localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(window.cart));
+        } catch (error) {
+          console.warn("Cart save was skipped:", error);
+        }
+      };
+
+      window.cart = window.loadCartFromStorage();
       window.receiveType = "delivery";
       window.currentRating = 0;
       window.allOrders = [];
@@ -1905,6 +1929,8 @@ const firebaseConfig = {
         } else {
           if (cartBar) cartBar.classList.add("hidden");
         }
+
+        saveCartToStorage();
       };
 
       window.changeCartQuantity = function (index, change) {
@@ -3159,6 +3185,7 @@ const firebaseConfig = {
         if (typeof initApp === "function") {
           initApp();
         }
+        updateCartBar();
       });
     </script>
   </body>
