@@ -3,6 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Auto Reload: مرة واحدة فقط عند بدء جلسة جديدة للتطبيق.
+      // sessionStorage يستمر أثناء الـReload ويُفترض أن ينتهي عند انتهاء جلسة WebView،
+      // لذلك يمنع حلقة الـReload دون لمس localStorage أو أي بيانات محفوظة.
+      (function () {
+        const RELOAD_FLAG = "__waslha_bm_auto_reload_done__";
+
+        try {
+          if (sessionStorage.getItem(RELOAD_FLAG) !== "true") {
+            sessionStorage.setItem(RELOAD_FLAG, "true");
+
+            // إضافة قيمة مؤقتة وفريدة لإجبار WebView على طلب الصفحة من الشبكة
+            // بدل الاعتماد على نسخة HTTP cache قديمة.
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set("__auto_reload", Date.now().toString());
+
+            window.location.replace(currentUrl.toString());
+          } else {
+            // بعد الـReload الأول: إزالة معامل الـcache-busting من العنوان
+            // بدون Reload إضافي وبدون التأثير على localStorage.
+            const currentUrl = new URL(window.location.href);
+            if (currentUrl.searchParams.has("__auto_reload")) {
+              currentUrl.searchParams.delete("__auto_reload");
+              window.history.replaceState(
+                window.history.state,
+                document.title,
+                currentUrl.toString()
+              );
+            }
+          }
+        } catch (error) {
+          // في حالة عدم توفر sessionStorage لأي سبب، لا نعيد التحميل
+          // لتجنب أي احتمال لحدوث Reload Loop.
+          console.warn("Auto Reload was skipped:", error);
+        }
+      })();
+    </script>
     <title>وصلها BM | Check-In</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
