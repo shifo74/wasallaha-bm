@@ -59,6 +59,16 @@
       .customer-service-whatsapp {
         bottom: calc(5.5rem + env(safe-area-inset-bottom));
       }
+
+      /* إصلاح ظهور خانة ترتيب الوجبات على شاشات الموبايل فقط */
+      #new-item-display-order,
+      #edit-item-display-order {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        min-height: 42px;
+      }
     </style>
     <script>
       tailwind.config = {
