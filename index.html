@@ -117,16 +117,10 @@
           >
             <i data-lucide="clock" class="w-10 h-10"></i>
           </div>
-          <h2
-            id="global-closed-title"
-            class="text-2xl font-extrabold text-brand-yellow"
-          >
+          <h2 class="text-2xl font-extrabold text-brand-yellow">
             نحن غير متاحين الآن
           </h2>
-          <p
-            id="global-closed-message"
-            class="text-xs text-gray-300 leading-relaxed"
-          >
+          <p class="text-xs text-gray-300 leading-relaxed">
             عذراً، تم إيقاف استقبال الطلبات حالياً لوقت متأخر أو لأعمال الصيانة.
             سنكون متاحين في أقرب وقت لخدمتكم!
           </p>
@@ -287,60 +281,27 @@
                 class="w-full border rounded-xl p-2.5 text-xs outline-none mb-2"
                 rows="2"
               ></textarea>
-              <div class="flex gap-2 items-center">
-                <button
-                  onclick="submitRating()"
-                  class="bg-brand-black text-brand-yellow text-xs font-bold py-2 px-4 rounded-xl shadow hover:bg-gray-800 transition"
-                >
-                  إرسال التقييم
-                </button>
-                <button
-                  type="button"
-                  onclick="toggleReviewsVisibility()"
-                  id="toggle-reviews-btn"
-                  class="bg-gray-100 text-gray-700 text-xs font-bold py-2 px-4 rounded-xl border border-gray-200 hover:bg-gray-200 transition"
-                >
-                  إظهار التقييمات
-                </button>
-              </div>
+              <button
+                onclick="submitRating()"
+                class="bg-brand-black text-brand-yellow text-xs font-bold py-2 px-4 rounded-xl shadow hover:bg-gray-800 transition"
+              >
+                إرسال التقييم
+              </button>
             </div>
             <div
               id="already-rated-msg"
               class="hidden text-xs text-green-600 bg-green-50 p-2.5 rounded-xl font-bold"
             >
-              ✓ شكرًا لك! لقد قمت بتقييم هذا المطعم.
+              ✓ شكرًا لك! لقد قمت بتقييم هذا المطعم من قبل.
             </div>
 
-            <div id="reviews-list-section" class="hidden pt-2 border-t">
+            <div class="pt-2 border-t">
               <h4 class="text-xs font-bold text-gray-700 mb-2">
-                أحدث التقييمات:
+                أحدث 3 تقييمات:
               </h4>
-              <div id="latest-reviews-container" class="space-y-2"></div>
-              <button
-                type="button"
-                onclick="showMoreReviews()"
-                id="show-more-reviews-btn"
-                class="hidden w-full bg-gray-100 text-gray-700 text-xs font-bold py-2 px-4 rounded-xl border border-gray-200 hover:bg-gray-200 transition mt-2"
-              >
-                عرض المزيد
-              </button>
-            </div>
-          </div>
-
-          <div class="relative">
-            <input
-              type="text"
-              id="restaurant-menu-search-input"
-              name="restaurant-menu-search"
-              autocomplete="off"
-              oninput="handleRestaurantMenuSearchInput()"
-              placeholder="🔍 ابحث عن وجبة داخل المطعم"
-              class="w-full bg-white border border-gray-200 rounded-2xl py-3 pr-10 pl-4 text-xs font-semibold text-brand-black placeholder-gray-400 shadow-sm outline-none focus:border-brand-yellow focus:ring-1 focus:ring-brand-yellow transition"
-            />
-            <div
-              class="absolute right-3 top-3 text-gray-400 pointer-events-none"
-            >
-              <i data-lucide="search" class="w-4 h-4"></i>
+              <div id="latest-reviews-container" class="space-y-2">
+                <p class="text-[11px] text-gray-400">جاري تحميل التقييمات...</p>
+              </div>
             </div>
           </div>
 
@@ -389,41 +350,10 @@
         id="app-toast-box"
         class="bg-brand-black text-brand-yellow border border-brand-yellow/30 rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3"
       >
-        <div
-          class="w-8 h-8 rounded-full bg-brand-yellow/15 flex items-center justify-center shrink-0"
-        >
+        <div class="w-8 h-8 rounded-full bg-brand-yellow/15 flex items-center justify-center shrink-0">
           <i data-lucide="check" class="w-5 h-5"></i>
         </div>
-        <span
-          id="app-toast-message"
-          class="text-xs font-extrabold leading-relaxed"
-        ></span>
-      </div>
-    </div>
-
-    <!-- Rating Success Modal -->
-    <div
-      id="rating-success-modal"
-      class="fixed inset-0 bg-black/70 z-[220] hidden flex items-center justify-center p-4"
-    >
-      <div
-        class="bg-white w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl"
-      >
-        <div
-          class="w-14 h-14 bg-brand-yellow/15 text-brand-black rounded-full flex items-center justify-center mx-auto border border-brand-yellow/30"
-        >
-          <i data-lucide="heart" class="w-8 h-8"></i>
-        </div>
-        <p class="text-sm font-extrabold text-brand-black leading-relaxed">
-          شكراً لك على تقييم هذا المطعم 🥰
-        </p>
-        <button
-          type="button"
-          onclick="closeRatingSuccessModal()"
-          class="w-full bg-brand-black text-brand-yellow font-bold py-3 rounded-xl text-xs shadow"
-        >
-          موافق
-        </button>
+        <span id="app-toast-message" class="text-xs font-extrabold leading-relaxed"></span>
       </div>
     </div>
 
@@ -432,24 +362,12 @@
       id="action-success-modal"
       class="fixed inset-0 bg-black/70 z-[210] hidden flex items-center justify-center p-4"
     >
-      <div
-        class="bg-white w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl"
-      >
-        <div
-          class="w-14 h-14 bg-brand-yellow/15 text-brand-black rounded-full flex items-center justify-center mx-auto border border-brand-yellow/30"
-        >
+      <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl">
+        <div class="w-14 h-14 bg-brand-yellow/15 text-brand-black rounded-full flex items-center justify-center mx-auto border border-brand-yellow/30">
           <i data-lucide="check-circle-2" class="w-8 h-8"></i>
         </div>
-        <h3
-          id="action-success-title"
-          class="font-extrabold text-lg text-brand-black"
-        >
-          تمت العملية بنجاح
-        </h3>
-        <p
-          id="action-success-message"
-          class="text-sm font-bold text-gray-600 leading-relaxed"
-        ></p>
+        <h3 id="action-success-title" class="font-extrabold text-lg text-brand-black">تمت العملية بنجاح</h3>
+        <p id="action-success-message" class="text-sm font-bold text-gray-600 leading-relaxed"></p>
         <button
           type="button"
           onclick="closeActionSuccessModal()"
@@ -465,19 +383,12 @@
       id="delete-confirm-modal"
       class="fixed inset-0 bg-black/70 z-[215] hidden flex items-center justify-center p-4"
     >
-      <div
-        class="bg-white w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl"
-      >
-        <div
-          class="w-14 h-14 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto border border-red-100"
-        >
+      <div class="bg-white w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl">
+        <div class="w-14 h-14 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto border border-red-100">
           <i data-lucide="trash-2" class="w-7 h-7"></i>
         </div>
         <h3 class="font-extrabold text-lg text-brand-black">تأكيد الحذف</h3>
-        <p
-          id="delete-confirm-message"
-          class="text-sm font-bold text-gray-600 leading-relaxed"
-        ></p>
+        <p id="delete-confirm-message" class="text-sm font-bold text-gray-600 leading-relaxed"></p>
         <div class="grid grid-cols-2 gap-3">
           <button
             type="button"
@@ -502,62 +413,24 @@
       id="product-options-modal"
       class="fixed inset-0 bg-black/70 z-[205] hidden flex items-center justify-center p-4"
     >
-      <div
-        class="bg-white w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto"
-      >
+      <div class="bg-white w-full max-w-sm rounded-3xl p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center border-b pb-2">
           <div>
-            <h3
-              id="product-options-title"
-              class="font-extrabold text-base text-brand-black"
-            >
-              اختيار الطلب
-            </h3>
-            <p
-              id="product-options-desc"
-              class="text-[11px] text-gray-500 mt-1"
-            ></p>
+            <h3 id="product-options-title" class="font-extrabold text-base text-brand-black">اختيار الطلب</h3>
+            <p id="product-options-desc" class="text-[11px] text-gray-500 mt-1"></p>
           </div>
-          <button
-            type="button"
-            onclick="closeProductOptionsModal()"
-            class="text-gray-400 font-bold text-lg"
-          >
-            ✕
-          </button>
+          <button type="button" onclick="closeProductOptionsModal()" class="text-gray-400 font-bold text-lg">✕</button>
         </div>
         <div id="product-options-list" class="space-y-2"></div>
         <div class="flex items-center justify-between pt-2 border-t">
           <span class="text-xs font-extrabold text-gray-700">الكمية</span>
-          <div
-            class="flex items-center border rounded-xl overflow-hidden bg-gray-50"
-          >
-            <button
-              type="button"
-              onclick="adjustProductModalQty(-1)"
-              class="px-4 py-2 font-bold text-gray-600 hover:bg-gray-200"
-            >
-              −
-            </button>
-            <span
-              id="product-modal-qty"
-              class="px-4 py-2 text-sm font-extrabold"
-              >1</span
-            >
-            <button
-              type="button"
-              onclick="adjustProductModalQty(1)"
-              class="px-4 py-2 font-bold text-gray-600 hover:bg-gray-200"
-            >
-              +
-            </button>
+          <div class="flex items-center border rounded-xl overflow-hidden bg-gray-50">
+            <button type="button" onclick="adjustProductModalQty(-1)" class="px-4 py-2 font-bold text-gray-600 hover:bg-gray-200">−</button>
+            <span id="product-modal-qty" class="px-4 py-2 text-sm font-extrabold">1</span>
+            <button type="button" onclick="adjustProductModalQty(1)" class="px-4 py-2 font-bold text-gray-600 hover:bg-gray-200">+</button>
           </div>
         </div>
-        <button
-          type="button"
-          onclick="confirmProductAddToCart()"
-          class="w-full bg-brand-yellow text-brand-black font-extrabold py-3 rounded-xl shadow"
-        >
+        <button type="button" onclick="confirmProductAddToCart()" class="w-full bg-brand-yellow text-brand-black font-extrabold py-3 rounded-xl shadow">
           إضافة للسلة
         </button>
       </div>
@@ -568,26 +441,13 @@
       id="order-details-modal"
       class="fixed inset-0 bg-black/70 z-[215] hidden flex items-center justify-center p-4"
     >
-      <div
-        class="bg-white w-full max-w-sm rounded-3xl p-5 space-y-3 shadow-2xl max-h-[90vh] overflow-y-auto"
-      >
+      <div class="bg-white w-full max-w-sm rounded-3xl p-5 space-y-3 shadow-2xl max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center border-b pb-2">
           <div>
-            <h3 class="font-extrabold text-base text-brand-black">
-              تفاصيل الطلب
-            </h3>
-            <p
-              id="order-details-code"
-              class="text-[11px] text-gray-500 mt-1"
-            ></p>
+            <h3 class="font-extrabold text-base text-brand-black">تفاصيل الطلب</h3>
+            <p id="order-details-code" class="text-[11px] text-gray-500 mt-1"></p>
           </div>
-          <button
-            type="button"
-            onclick="closeOrderDetailsModal()"
-            class="text-gray-400 font-bold text-lg"
-          >
-            ✕
-          </button>
+          <button type="button" onclick="closeOrderDetailsModal()" class="text-gray-400 font-bold text-lg">✕</button>
         </div>
         <div id="order-details-content" class="space-y-2 text-xs"></div>
       </div>
@@ -741,70 +601,6 @@
       </div>
     </div>
 
-    <!-- إعدادات شاشة إغلاق التطبيق العام -->
-    <div
-      id="global-close-settings-modal"
-      class="fixed inset-0 bg-black/70 z-[130] hidden flex items-center justify-center p-4"
-    >
-      <div
-        class="bg-white w-full max-w-sm rounded-3xl p-6 space-y-4 text-center shadow-2xl"
-      >
-        <div
-          class="w-12 h-12 bg-brand-yellow/20 text-brand-black rounded-full flex items-center justify-center mx-auto"
-        >
-          <i data-lucide="clock" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <h3 class="font-bold text-lg text-brand-black">إعداد شاشة الإغلاق</h3>
-          <p class="text-xs text-gray-500 mt-1">
-            اكتب العنوان والرسالة التي ستظهر للعملاء عند إغلاق التطبيق.
-          </p>
-        </div>
-
-        <div class="space-y-3 text-right">
-          <div>
-            <label class="text-[11px] font-bold text-gray-700 block mb-1">
-              عنوان شاشة الإغلاق
-            </label>
-            <input
-              id="global-close-title-input"
-              type="text"
-              autocomplete="off"
-              class="w-full border rounded-xl p-3 text-xs outline-none focus:border-brand-yellow"
-              placeholder="مثال: غير متاحين الآن"
-            />
-          </div>
-
-          <div>
-            <label class="text-[11px] font-bold text-gray-700 block mb-1">
-              رسالة شاشة الإغلاق
-            </label>
-            <textarea
-              id="global-close-message-input"
-              rows="4"
-              class="w-full border rounded-xl p-3 text-xs outline-none focus:border-brand-yellow resize-none"
-              placeholder="اكتب الرسالة التي ستظهر تحت العنوان"
-            ></textarea>
-          </div>
-        </div>
-
-        <div class="flex gap-2 pt-2">
-          <button
-            onclick="confirmGlobalAppClose()"
-            class="flex-1 bg-red-600 text-white font-bold py-3 rounded-xl text-xs shadow"
-          >
-            تأكيد الإغلاق
-          </button>
-          <button
-            onclick="cancelGlobalAppClose()"
-            class="bg-gray-100 text-gray-600 font-bold px-4 py-3 rounded-xl text-xs"
-          >
-            إلغاء
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- ==================== MERCHANT VIEW ==================== -->
     <div
       id="merchant-mode"
@@ -945,14 +741,6 @@
                 placeholder="رابط مباشر للصورة (أو اختر ملف أدناه)..."
                 class="w-full border rounded-xl p-2.5"
               />
-              <input
-                type="number"
-                id="new-restaurant-display-order"
-                min="1"
-                step="1"
-                placeholder="ترتيب ظهور المطعم (اختياري)"
-                class="w-full border rounded-xl p-2.5"
-              />
               <div>
                 <label class="font-bold text-gray-600 block mb-1 text-[11px]"
                   >أو اختر صورة من جهازك مباشرة:</label
@@ -1032,14 +820,6 @@
                 placeholder="رابط الصورة"
                 class="w-full border rounded-xl p-2.5"
               />
-              <input
-                type="number"
-                id="edit-restaurant-display-order"
-                min="1"
-                step="1"
-                placeholder="ترتيب ظهور المطعم (اختياري)"
-                class="w-full border rounded-xl p-2.5"
-              />
               <div>
                 <label class="font-bold text-gray-600 block mb-1 text-[11px]"
                   >تحديث الصورة من الجهاز (اختياري):</label
@@ -1057,44 +837,11 @@
               >
                 حفظ تعديلات المطعم
               </button>
-              <button
-                type="button"
-                onclick="toggleMerchantReviews()"
-                id="merchant-reviews-btn"
-                class="w-full bg-gray-100 text-gray-700 font-bold py-2.5 rounded-xl border border-gray-200 shadow-sm mt-1"
-              >
-                التقييمات
-              </button>
             </div>
           </div>
         </div>
 
         <div id="restaurant-dependent-sections" class="hidden space-y-4">
-          <!-- إدارة تقييمات المطعم المحدد -->
-          <div
-            id="merchant-reviews-section"
-            class="hidden bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3"
-          >
-            <div class="flex items-center justify-between gap-2">
-              <h3 class="font-extrabold text-sm text-brand-black">
-                تقييمات المطعم المحدد
-              </h3>
-              <button
-                type="button"
-                onclick="toggleMerchantReviews()"
-                id="merchant-reviews-close-btn"
-                class="text-gray-500 bg-gray-100 hover:bg-gray-200 px-2.5 py-1 rounded-lg text-[11px] font-bold"
-              >
-                إخفاء
-              </button>
-            </div>
-            <div id="merchant-reviews-list" class="space-y-2 text-xs">
-              <p class="text-gray-400 text-center py-4">
-                اختر مطعم لعرض تقييماته هنا.
-              </p>
-            </div>
-          </div>
-
           <!-- إضافة وجبة جديدة -->
           <div
             class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3"
@@ -1118,8 +865,7 @@
 
               <div class="space-y-2 pt-1 border-t">
                 <p class="font-bold text-gray-700">
-                  الأحجام والأسعار (حتى 5 أحجام) — اترك اسم الحجم الأول فارغاً
-                  لاستخدام "وان سايز":
+                  الأحجام والأسعار (حتى 5 أحجام) — اترك اسم الحجم الأول فارغاً لاستخدام "وان سايز":
                 </p>
                 <div class="grid grid-cols-2 gap-2">
                   <input
@@ -1376,96 +1122,6 @@
       </div>
     </div>
 
-    <!-- Modal تعديل تقييم -->
-    <div
-      id="edit-review-modal"
-      class="fixed inset-0 bg-black/70 z-[111] hidden flex items-center justify-center p-4"
-    >
-      <div
-        class="bg-white w-full max-w-sm rounded-3xl p-5 space-y-3 max-h-[90vh] overflow-y-auto"
-      >
-        <div class="flex justify-between items-center border-b pb-2">
-          <h3 class="font-bold text-sm text-brand-black">تعديل التقييم</h3>
-          <button
-            type="button"
-            onclick="closeEditReviewModal()"
-            class="text-gray-400 font-bold text-lg"
-          >
-            ✕
-          </button>
-        </div>
-        <input type="hidden" id="edit-review-id" />
-        <div class="space-y-3 text-xs">
-          <div>
-            <p class="font-bold text-gray-700 mb-2">عدد النجوم</p>
-            <div
-              id="edit-review-star-selector"
-              class="flex gap-1 justify-center"
-              dir="ltr"
-            >
-              <button
-                type="button"
-                class="edit-review-star-btn text-3xl leading-none text-gray-300"
-                onclick="setEditReviewRating(1)"
-              >
-                ★
-              </button>
-              <button
-                type="button"
-                class="edit-review-star-btn text-3xl leading-none text-gray-300"
-                onclick="setEditReviewRating(2)"
-              >
-                ★
-              </button>
-              <button
-                type="button"
-                class="edit-review-star-btn text-3xl leading-none text-gray-300"
-                onclick="setEditReviewRating(3)"
-              >
-                ★
-              </button>
-              <button
-                type="button"
-                class="edit-review-star-btn text-3xl leading-none text-gray-300"
-                onclick="setEditReviewRating(4)"
-              >
-                ★
-              </button>
-              <button
-                type="button"
-                class="edit-review-star-btn text-3xl leading-none text-gray-300"
-                onclick="setEditReviewRating(5)"
-              >
-                ★
-              </button>
-            </div>
-          </div>
-          <textarea
-            id="edit-review-comment"
-            placeholder="نص التقييم"
-            class="w-full border rounded-xl p-2.5 text-xs outline-none"
-            rows="4"
-          ></textarea>
-        </div>
-        <div class="grid grid-cols-2 gap-2 pt-1">
-          <button
-            type="button"
-            onclick="closeEditReviewModal()"
-            class="bg-gray-100 text-gray-700 font-bold py-2.5 rounded-xl text-xs"
-          >
-            إلغاء
-          </button>
-          <button
-            type="button"
-            onclick="saveEditedReview()"
-            class="bg-brand-black text-brand-yellow font-bold py-2.5 rounded-xl text-xs shadow"
-          >
-            حفظ
-          </button>
-        </div>
-      </div>
-    </div>
-
     <!-- Modal تعديل وجبة -->
     <div
       id="edit-item-modal"
@@ -1666,32 +1322,6 @@
       </div>
     </div>
 
-    <!-- Customer Data Validation Modal -->
-    <div
-      id="customer-data-validation-modal"
-      class="fixed inset-0 bg-black/70 z-[210] hidden flex items-center justify-center p-4"
-    >
-      <div
-        class="bg-white w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl"
-      >
-        <div
-          class="w-14 h-14 bg-brand-yellow text-brand-black rounded-full flex items-center justify-center mx-auto"
-        >
-          <i data-lucide="alert-circle" class="w-8 h-8"></i>
-        </div>
-        <p class="font-extrabold text-base text-brand-black leading-relaxed">
-          يرجى مراجعة البيانات وكتابتها بطريقة صحيحة
-        </p>
-        <button
-          type="button"
-          onclick="closeCustomerDataValidationModal()"
-          class="w-full bg-brand-black text-brand-yellow font-extrabold py-3 rounded-xl text-xs shadow"
-        >
-          موافق
-        </button>
-      </div>
-    </div>
-
     <!-- Order Success Modal -->
     <div
       id="success-modal"
@@ -1743,17 +1373,17 @@
         getDoc,
       } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-      const firebaseConfig = {
-        apiKey: "AIzaSyCHPSGma80M-GNX6PAJYqcbhu36806cUqk",
-        authDomain: "wasallha-key.firebaseapp.com",
-        databaseURL: "https://wasallha-key-default-rtdb.firebaseio.com",
-        projectId: "wasallha-key",
-        storageBucket: "wasallha-key.firebasestorage.app",
-        messagingSenderId: "21964899437",
-        appId: "1:21964899437:web:6173f96c86bd9d939e2b64",
-        measurementId: "G-LFM7N1YN5D",
-      };
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCHPSGma80M-GNX6PAJYqcbhu36806cUqk",
+  authDomain: "wasallha-key.firebaseapp.com",
+  databaseURL: "https://wasallha-key-default-rtdb.firebaseio.com",
+  projectId: "wasallha-key",
+  storageBucket: "wasallha-key.firebasestorage.app",
+  messagingSenderId: "21964899437",
+  appId: "1:21964899437:web:6173f96c86bd9d939e2b64",
+  measurementId: "G-LFM7N1YN5D"
+};
 
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
@@ -1777,21 +1407,6 @@
 
         if (isClosed) {
           closedScreen.classList.remove("hidden");
-
-          const closeScreenTitle = docSnap.data()?.closeScreenTitle;
-          const closeScreenMessage = docSnap.data()?.closeScreenMessage;
-          const closedTitle = document.getElementById("global-closed-title");
-          const closedMessage = document.getElementById(
-            "global-closed-message"
-          );
-
-          if (closedTitle && closeScreenTitle !== undefined) {
-            closedTitle.textContent = closeScreenTitle;
-          }
-          if (closedMessage && closeScreenMessage !== undefined) {
-            closedMessage.textContent = closeScreenMessage;
-          }
-
           if (statusIndicator) {
             statusIndicator.textContent = "التطبيق مغلق (غير متاحين)";
             statusIndicator.className =
@@ -1819,67 +1434,18 @@
         }
       });
 
-      window.openGlobalCloseSettingsModal = function () {
-        const modal = document.getElementById("global-close-settings-modal");
-        const titleInput = document.getElementById("global-close-title-input");
-        const messageInput = document.getElementById(
-          "global-close-message-input"
-        );
-
-        if (titleInput) titleInput.value = "";
-        if (messageInput) messageInput.value = "";
-
-        if (modal) modal.classList.remove("hidden");
-        if (window.lucide) lucide.createIcons();
-      };
-
-      window.cancelGlobalAppClose = function () {
-        const modal = document.getElementById("global-close-settings-modal");
-        if (modal) modal.classList.add("hidden");
-      };
-
-      window.confirmGlobalAppClose = async function () {
-        const titleInput = document.getElementById("global-close-title-input");
-        const messageInput = document.getElementById(
-          "global-close-message-input"
-        );
-        const title = titleInput ? titleInput.value.trim() : "";
-        const message = messageInput ? messageInput.value.trim() : "";
-
-        try {
-          await setDoc(
-            window.settingsDocRef,
-            {
-              isClosed: true,
-              closeScreenTitle: title,
-              closeScreenMessage: message,
-            },
-            { merge: true }
-          );
-
-          const modal = document.getElementById("global-close-settings-modal");
-          if (modal) modal.classList.add("hidden");
-
-          alert("تم إغلاق التطبيق بنجاح.");
-        } catch (err) {
-          console.error(err);
-          alert("حدث خطأ أثناء تحديث حالة التطبيق.");
-        }
-      };
-
       window.updateGlobalAppStatus = async function (closeState) {
-        if (closeState) {
-          openGlobalCloseSettingsModal();
-          return;
-        }
-
         try {
           await setDoc(
             window.settingsDocRef,
-            { isClosed: false },
+            { isClosed: closeState },
             { merge: true }
           );
-          alert("تم فتح التطبيق للعامة بنجاح.");
+          alert(
+            closeState
+              ? "تم إغلاق التطبيق بنجاح."
+              : "تم فتح التطبيق للعامة بنجاح."
+          );
         } catch (err) {
           console.error(err);
           alert("حدث خطأ أثناء تحديث حالة التطبيق.");
@@ -1889,35 +1455,7 @@
       window.restaurantsData = [];
       window.currentRestaurantId = null;
       window.currentMerchantRestaurantId = null;
-      window.merchantReviewsVisible = false;
-      window.merchantReviewsUnsubscribe = null;
-      window.currentMerchantReviews = [];
-      window.currentEditingReviewRating = 0;
-
-      const CART_STORAGE_KEY = "waslha_bm_cart";
-
-      window.loadCartFromStorage = function () {
-        try {
-          const savedCart = localStorage.getItem(CART_STORAGE_KEY);
-          if (!savedCart) return [];
-
-          const parsedCart = JSON.parse(savedCart);
-          return Array.isArray(parsedCart) ? parsedCart : [];
-        } catch (error) {
-          console.warn("Cart restore was skipped:", error);
-          return [];
-        }
-      };
-
-      window.saveCartToStorage = function () {
-        try {
-          localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(window.cart));
-        } catch (error) {
-          console.warn("Cart save was skipped:", error);
-        }
-      };
-
-      window.cart = window.loadCartFromStorage();
+      window.cart = [];
       window.receiveType = "delivery";
       window.currentRating = 0;
       window.allOrders = [];
@@ -1925,18 +1463,12 @@
       window.currentDateFilter = "";
       window.merchantOrderSearchQuery = "";
       window.searchQuery = "";
-      window.restaurantMenuSearchQuery = "";
 
       window.initApp = function () {
         onSnapshot(window.colRef, (snapshot) => {
           window.restaurantsData = [];
-          let restaurantSnapshotIndex = 0;
           snapshot.forEach((docSnap) => {
-            window.restaurantsData.push({
-              id: docSnap.id,
-              ...docSnap.data(),
-              __restaurantSnapshotIndex: restaurantSnapshotIndex++,
-            });
+            window.restaurantsData.push({ id: docSnap.id, ...docSnap.data() });
           });
           renderRestaurantsList();
           populateMerchantDropdown();
@@ -1955,20 +1487,9 @@
               }
 
               const editName = document.getElementById("edit-restaurant-name");
-              const editImage = document.getElementById(
-                "edit-restaurant-image"
-              );
-              const editDisplayOrder = document.getElementById(
-                "edit-restaurant-display-order"
-              );
+              const editImage = document.getElementById("edit-restaurant-image");
               if (editName) editName.value = currentMerchantRest.name || "";
               if (editImage) editImage.value = currentMerchantRest.image || "";
-              if (editDisplayOrder) {
-                editDisplayOrder.value =
-                  currentMerchantRest.displayOrder != null
-                    ? currentMerchantRest.displayOrder
-                    : "";
-              }
 
               updateRestaurantOpenStatusButtons(
                 currentMerchantRest.isClosed === true
@@ -1988,14 +1509,8 @@
             window.allOrders.push({ id: docSnap.id, ...docSnap.data() });
           });
           window.allOrders.sort((a, b) => {
-            const aTime = a.createdAt?.seconds
-              ? a.createdAt.seconds * 1000 +
-                (a.createdAt.nanoseconds || 0) / 1000000
-              : 0;
-            const bTime = b.createdAt?.seconds
-              ? b.createdAt.seconds * 1000 +
-                (b.createdAt.nanoseconds || 0) / 1000000
-              : 0;
+            const aTime = a.createdAt?.seconds ? a.createdAt.seconds * 1000 + (a.createdAt.nanoseconds || 0) / 1000000 : 0;
+            const bTime = b.createdAt?.seconds ? b.createdAt.seconds * 1000 + (b.createdAt.nanoseconds || 0) / 1000000 : 0;
             return bTime - aTime;
           });
           renderMerchantOrders();
@@ -2042,8 +1557,6 @@
 
           return nameMatch || menuMatch;
         });
-
-        filtered = sortRestaurantsForDisplay(filtered);
 
         if (filtered.length === 0) {
           container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs bg-white rounded-2xl p-4">لا توجد نتائج بحث مطابقة لـ "${query}"</div>`;
@@ -2109,12 +1622,6 @@
         document.getElementById("current-restaurant-title").textContent =
           rest.name;
 
-        window.restaurantMenuSearchQuery = "";
-        const restaurantMenuSearchInput = document.getElementById(
-          "restaurant-menu-search-input"
-        );
-        if (restaurantMenuSearchInput) restaurantMenuSearchInput.value = "";
-
         const closedAlert = document.getElementById("restaurant-closed-alert");
         if (rest.isClosed === true) {
           closedAlert.classList.remove("hidden");
@@ -2126,7 +1633,6 @@
             "المنيو الكامل (محدث أونلاين)";
         }
 
-        resetReviewsDisplay();
         renderMenuForRestaurant(restId);
         checkIfAlreadyRated(restId);
         loadReviewsForRestaurant(restId);
@@ -2137,21 +1643,6 @@
         document.getElementById("restaurants-view").classList.remove("hidden");
         document.getElementById("back-btn").classList.add("hidden");
         window.currentRestaurantId = null;
-        window.restaurantMenuSearchQuery = "";
-        const restaurantMenuSearchInput = document.getElementById(
-          "restaurant-menu-search-input"
-        );
-        if (restaurantMenuSearchInput) restaurantMenuSearchInput.value = "";
-      };
-
-      window.handleRestaurantMenuSearchInput = function () {
-        const input = document.getElementById("restaurant-menu-search-input");
-        window.restaurantMenuSearchQuery = input
-          ? input.value.trim().toLowerCase()
-          : "";
-        if (window.currentRestaurantId) {
-          renderMenuForRestaurant(window.currentRestaurantId);
-        }
       };
 
       window.renderMenuForRestaurant = function (restId) {
@@ -2165,33 +1656,13 @@
           return;
         }
 
-        const query = window.restaurantMenuSearchQuery || "";
-        const filteredMenu = menu.filter((item) => {
-          if (!query) return true;
-          const itemNameMatch =
-            item.name && item.name.toLowerCase().includes(query);
-          const itemDescMatch =
-            item.desc && item.desc.toLowerCase().includes(query);
-          return itemNameMatch || itemDescMatch;
-        });
-
-        if (filteredMenu.length === 0) {
-          container.innerHTML = `<div class="text-center py-8 text-gray-500 text-sm bg-white rounded-2xl p-4">لا توجد وجبات مطابقة لبحثك داخل هذا المطعم.</div>`;
-          return;
-        }
-
         let html = "";
-        filteredMenu.forEach((item) => {
-          const optionsCount = Array.isArray(item.options)
-            ? item.options.length
-            : 0;
-          const pricePreview =
-            optionsCount === 1
-              ? `${item.options[0].price} ج.م`
-              : optionsCount > 1
-              ? `من ${Math.min(
-                  ...item.options.map((o) => Number(o.price) || 0)
-                )} ج.م`
+        menu.forEach((item) => {
+          const optionsCount = Array.isArray(item.options) ? item.options.length : 0;
+          const pricePreview = optionsCount === 1
+            ? `${item.options[0].price} ج.م`
+            : optionsCount > 1
+              ? `من ${Math.min(...item.options.map((o) => Number(o.price) || 0))} ج.م`
               : "السعر عند الاختيار";
 
           html += `
@@ -2201,12 +1672,8 @@
             >
                 <div class="flex justify-between items-start gap-3">
                     <div class="min-w-0 flex-1">
-                        <h3 class="font-extrabold text-sm text-brand-black">${
-                          item.name
-                        }</h3>
-                        <p class="text-xs text-gray-500 mt-1">${
-                          item.desc || ""
-                        }</p>
+                        <h3 class="font-extrabold text-sm text-brand-black">${item.name}</h3>
+                        <p class="text-xs text-gray-500 mt-1">${item.desc || ""}</p>
                     </div>
                     <span class="text-xs font-extrabold text-brand-black bg-brand-yellow/15 px-2 py-1 rounded-lg whitespace-nowrap">${pricePreview}</span>
                 </div>
@@ -2221,16 +1688,11 @@
       };
 
       window.openProductOptionsModal = function (itemId) {
-        const rest = window.restaurantsData.find(
-          (r) => r.id === window.currentRestaurantId
-        );
+        const rest = window.restaurantsData.find((r) => r.id === window.currentRestaurantId);
         if (!rest) return;
 
         if (rest.isClosed === true) {
-          showAppToast(
-            "عذراً، هذا المطعم مغلق حالياً ولا يمكن إضافة طلبات جديدة.",
-            "error"
-          );
+          showAppToast("عذراً، هذا المطعم مغلق حالياً ولا يمكن إضافة طلبات جديدة.", "error");
           return;
         }
 
@@ -2240,15 +1702,11 @@
         window.currentProductForCart = { restaurant: rest, item: item };
         window.productModalQty = 1;
         document.getElementById("product-modal-qty").textContent = "1";
-        document.getElementById("product-options-title").textContent =
-          item.name;
-        document.getElementById("product-options-desc").textContent =
-          item.desc || "حدد اختيارك ثم أضف الكمية للسلة.";
+        document.getElementById("product-options-title").textContent = item.name;
+        document.getElementById("product-options-desc").textContent = item.desc || "حدد اختيارك ثم أضف الكمية للسلة.";
 
         const options = Array.isArray(item.options) ? item.options : [];
-        const optionsContainer = document.getElementById(
-          "product-options-list"
-        );
+        const optionsContainer = document.getElementById("product-options-list");
         if (options.length === 0) {
           optionsContainer.innerHTML = `
             <div class="bg-gray-50 border rounded-2xl p-3 text-center space-y-1">
@@ -2259,12 +1717,8 @@
         } else if (options.length === 1) {
           optionsContainer.innerHTML = `
             <div class="bg-gray-50 border border-brand-yellow rounded-2xl p-3 flex items-center justify-between">
-              <span class="font-extrabold text-sm text-brand-black">${
-                options[0].label || "وان سايز"
-              }</span>
-              <span class="font-extrabold text-brand-black">${
-                options[0].price
-              } ج.م</span>
+              <span class="font-extrabold text-sm text-brand-black">${options[0].label || "وان سايز"}</span>
+              <span class="font-extrabold text-brand-black">${options[0].price} ج.م</span>
               <input type="hidden" id="selected-product-option" value="0">
             </div>`;
         } else {
@@ -2273,31 +1727,21 @@
             optionsHtml += `
               <label class="flex items-center justify-between bg-gray-50 p-3 rounded-2xl border text-xs cursor-pointer hover:bg-amber-50/50">
                 <div class="flex items-center gap-2">
-                  <input type="radio" name="product-modal-option" value="${idx}" ${
-              idx === 0 ? "checked" : ""
-            } class="text-brand-black focus:ring-brand-yellow">
-                  <span class="font-extrabold text-gray-800">${
-                    opt.label || "اختيار"
-                  }</span>
+                  <input type="radio" name="product-modal-option" value="${idx}" ${idx === 0 ? "checked" : ""} class="text-brand-black focus:ring-brand-yellow">
+                  <span class="font-extrabold text-gray-800">${opt.label || "اختيار"}</span>
                 </div>
-                <span class="font-extrabold text-brand-black">${
-                  opt.price
-                } ج.م</span>
+                <span class="font-extrabold text-brand-black">${opt.price} ج.م</span>
               </label>`;
           });
           optionsContainer.innerHTML = optionsHtml;
         }
 
-        document
-          .getElementById("product-options-modal")
-          .classList.remove("hidden");
+        document.getElementById("product-options-modal").classList.remove("hidden");
         if (window.lucide) lucide.createIcons();
       };
 
       window.closeProductOptionsModal = function () {
-        document
-          .getElementById("product-options-modal")
-          .classList.add("hidden");
+        document.getElementById("product-options-modal").classList.add("hidden");
         window.currentProductForCart = null;
       };
 
@@ -2315,14 +1759,11 @@
 
         const item = current.item;
         const options = Array.isArray(item.options) ? item.options : [];
-        const selectedRadio = document.querySelector(
-          'input[name="product-modal-option"]:checked'
-        );
+        const selectedRadio = document.querySelector('input[name="product-modal-option"]:checked');
         const optIndex = selectedRadio ? parseInt(selectedRadio.value) : 0;
-        const chosenOpt =
-          options.length > 0
-            ? options[optIndex] || options[0]
-            : { label: "وان سايز", price: Number(item.price || 0) };
+        const chosenOpt = options.length > 0
+          ? (options[optIndex] || options[0])
+          : { label: "وان سايز", price: Number(item.price || 0) };
 
         if (!chosenOpt || Number.isNaN(Number(chosenOpt.price))) {
           showAppToast("لا يوجد سعر صالح لهذا المنتج.", "error");
@@ -2332,8 +1773,7 @@
         const qty = Number(window.productModalQty || 1);
         const cartItemKey = `${item.id}-${optIndex}`;
         const existing = window.cart.find(
-          (c) =>
-            c.key === cartItemKey && c.restaurantId === current.restaurant.id
+          (c) => c.key === cartItemKey && c.restaurantId === current.restaurant.id
         );
 
         if (existing) {
@@ -2423,10 +1863,9 @@
 
         if (window.appToastTimer) clearTimeout(window.appToastTimer);
         messageEl.textContent = message;
-        box.className =
-          type === "error"
-            ? "bg-red-600 text-white border border-red-300 rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3"
-            : "bg-brand-black text-brand-yellow border border-brand-yellow/30 rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3";
+        box.className = type === "error"
+          ? "bg-red-600 text-white border border-red-300 rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3"
+          : "bg-brand-black text-brand-yellow border border-brand-yellow/30 rounded-2xl px-4 py-3 shadow-2xl flex items-center gap-3";
         toast.classList.remove("hidden");
         if (window.lucide) lucide.createIcons();
         window.appToastTimer = setTimeout(() => {
@@ -2434,15 +1873,10 @@
         }, 3000);
       };
 
-      window.showActionSuccessModal = function (
-        message,
-        title = "تمت العملية بنجاح"
-      ) {
+      window.showActionSuccessModal = function (message, title = "تمت العملية بنجاح") {
         document.getElementById("action-success-title").textContent = title;
         document.getElementById("action-success-message").textContent = message;
-        document
-          .getElementById("action-success-modal")
-          .classList.remove("hidden");
+        document.getElementById("action-success-modal").classList.remove("hidden");
         if (window.lucide) lucide.createIcons();
       };
 
@@ -2471,8 +1905,6 @@
         } else {
           if (cartBar) cartBar.classList.add("hidden");
         }
-
-        saveCartToStorage();
       };
 
       window.changeCartQuantity = function (index, change) {
@@ -2492,9 +1924,7 @@
       window.removeCartItem = function (index) {
         if (!window.cart[index]) return;
         const item = window.cart[index];
-        showDeleteConfirmation(
-          `هل أنت متأكد من حذف الطلب "${item.name}" من السلة؟`
-        ).then((confirmed) => {
+        showDeleteConfirmation(`هل أنت متأكد من حذف الطلب "${item.name}" من السلة؟`).then((confirmed) => {
           if (!confirmed) return;
           window.cart.splice(index, 1);
           updateCartBar();
@@ -2564,27 +1994,19 @@
         window.receiveType = "delivery";
       };
 
-      window.showCustomerDataValidationModal = function () {
-        document
-          .getElementById("customer-data-validation-modal")
-          .classList.remove("hidden");
-        if (window.lucide) lucide.createIcons();
-      };
-
-      window.closeCustomerDataValidationModal = function () {
-        document
-          .getElementById("customer-data-validation-modal")
-          .classList.add("hidden");
-      };
-
       window.submitOrder = async function () {
         const name = document.getElementById("cust-name").value.trim();
         const phone = document.getElementById("cust-phone").value.trim();
         const address = document.getElementById("cust-address").value.trim();
         const notes = document.getElementById("cust-notes").value.trim();
 
-        if (!name || !phone || !address || !/^\d{11}$/.test(phone)) {
-          showCustomerDataValidationModal();
+        if (!name || !phone || !address) {
+          alert("يرجى إكمال بيانات الاسم ورقم الموبايل وعنوان التوصيل.");
+          return;
+        }
+
+        if (phone.length < 11) {
+          alert("يرجى إدخال رقم موبايل صحيح مكون من 11 رقم.");
           return;
         }
 
@@ -2731,18 +2153,6 @@
         });
       };
 
-      window.closeRatingSuccessModal = function () {
-        const modal = document.getElementById("rating-success-modal");
-        if (modal) modal.classList.add("hidden");
-      };
-
-      window.showRatingSuccessModal = function () {
-        const modal = document.getElementById("rating-success-modal");
-        if (!modal) return;
-        modal.classList.remove("hidden");
-        if (window.lucide) lucide.createIcons();
-      };
-
       window.submitRating = async function () {
         if (window.currentRating === 0) {
           alert("يرجى تحديد عدد النجوم أولاً.");
@@ -2766,7 +2176,7 @@
           });
 
           localStorage.setItem(`rated_${restId}`, "true");
-          showRatingSuccessModal();
+          alert("شكراً لك! تم إرسال تقييمك بنجاح.");
           checkIfAlreadyRated(restId);
           loadReviewsForRestaurant(restId);
         } catch (err) {
@@ -2780,123 +2190,15 @@
         const formContainer = document.getElementById("rating-form-container");
         const alreadyMsg = document.getElementById("already-rated-msg");
 
-        const submitButton = formContainer?.querySelector(
-          'button[onclick="submitRating()"]'
-        );
-        const ratingPrompt = formContainer?.querySelector("p");
-        const starSelector = document.getElementById("star-selector");
-        const reviewComment = document.getElementById("review-comment");
-
         if (rated === "true") {
-          ratingPrompt?.classList.add("hidden");
-          starSelector?.classList.add("hidden");
-          reviewComment?.classList.add("hidden");
-          submitButton?.classList.add("hidden");
+          formContainer.classList.add("hidden");
           alreadyMsg.classList.remove("hidden");
         } else {
-          ratingPrompt?.classList.remove("hidden");
-          starSelector?.classList.remove("hidden");
-          reviewComment?.classList.remove("hidden");
-          submitButton?.classList.remove("hidden");
+          formContainer.classList.remove("hidden");
           alreadyMsg.classList.add("hidden");
           window.setRating(0);
-          if (reviewComment) reviewComment.value = "";
+          document.getElementById("review-comment").value = "";
         }
-      };
-
-      window.reviewDisplayCount = 3;
-      window.currentRestaurantReviews = [];
-      window.reviewsVisible = false;
-
-      window.renderVisibleReviews = function () {
-        const reviewsContainer = document.getElementById(
-          "latest-reviews-container"
-        );
-        const showMoreBtn = document.getElementById("show-more-reviews-btn");
-        if (!reviewsContainer || !showMoreBtn) return;
-
-        const visibleReviews = window.currentRestaurantReviews.slice(
-          0,
-          window.reviewDisplayCount
-        );
-
-        if (visibleReviews.length === 0) {
-          reviewsContainer.innerHTML = `<p class="text-[11px] text-gray-400">لا توجد تقييمات مضافة لهذا المطعم بعد.</p>`;
-        } else {
-          let html = "";
-          visibleReviews.forEach((rev) => {
-            const starsStr =
-              "★".repeat(rev.rating) + "☆".repeat(5 - rev.rating);
-            html += `
-              <div class="bg-gray-50 p-2.5 rounded-xl border text-xs space-y-1">
-                <div class="flex justify-between items-center">
-                  <span class="text-brand-yellow font-extrabold text-sm">${starsStr}</span>
-                  <span class="text-[10px] text-gray-400">عميل تقييم</span>
-                </div>
-                ${
-                  rev.comment
-                    ? `<p class="text-gray-700 text-[11px] leading-relaxed">${rev.comment}</p>`
-                    : `<p class="text-gray-400 text-[10px] italic">بدون تعليق مكتوب</p>`
-                }
-              </div>
-            `;
-          });
-          reviewsContainer.innerHTML = html;
-        }
-
-        if (
-          window.reviewDisplayCount < window.currentRestaurantReviews.length
-        ) {
-          showMoreBtn.classList.remove("hidden");
-        } else {
-          showMoreBtn.classList.add("hidden");
-        }
-      };
-
-      window.toggleReviewsVisibility = function () {
-        const reviewsSection = document.getElementById("reviews-list-section");
-        const toggleBtn = document.getElementById("toggle-reviews-btn");
-        if (!reviewsSection || !toggleBtn) return;
-
-        window.reviewsVisible = !window.reviewsVisible;
-
-        if (window.reviewsVisible) {
-          window.reviewDisplayCount = 3;
-          reviewsSection.classList.remove("hidden");
-          toggleBtn.textContent = "إخفاء التقييمات";
-          window.renderVisibleReviews();
-        } else {
-          reviewsSection.classList.add("hidden");
-          document
-            .getElementById("show-more-reviews-btn")
-            ?.classList.add("hidden");
-          toggleBtn.textContent = "إظهار التقييمات";
-        }
-      };
-
-      window.showMoreReviews = function () {
-        if (!window.reviewsVisible) return;
-
-        window.reviewDisplayCount += 3;
-        window.renderVisibleReviews();
-      };
-
-      window.resetReviewsDisplay = function () {
-        window.reviewsVisible = false;
-        window.reviewDisplayCount = 3;
-        window.currentRestaurantReviews = [];
-
-        const reviewsSection = document.getElementById("reviews-list-section");
-        const toggleBtn = document.getElementById("toggle-reviews-btn");
-        const showMoreBtn = document.getElementById("show-more-reviews-btn");
-        const reviewsContainer = document.getElementById(
-          "latest-reviews-container"
-        );
-
-        if (reviewsSection) reviewsSection.classList.add("hidden");
-        if (toggleBtn) toggleBtn.textContent = "إظهار التقييمات";
-        if (showMoreBtn) showMoreBtn.classList.add("hidden");
-        if (reviewsContainer) reviewsContainer.innerHTML = "";
       };
 
       window.loadReviewsForRestaurant = function (restId) {
@@ -2929,12 +2231,33 @@
           reviewsArr.sort(
             (a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
           );
+          const latestThree = reviewsArr.slice(0, 3);
+          const reviewsContainer = document.getElementById(
+            "latest-reviews-container"
+          );
 
-          if (window.currentRestaurantId === restId) {
-            window.currentRestaurantReviews = reviewsArr;
-            if (window.reviewsVisible) {
-              window.renderVisibleReviews();
-            }
+          if (latestThree.length === 0) {
+            reviewsContainer.innerHTML = `<p class="text-[11px] text-gray-400">لا توجد تقييمات مضافة لهذا المطعم بعد.</p>`;
+          } else {
+            let html = "";
+            latestThree.forEach((rev) => {
+              const starsStr =
+                "★".repeat(rev.rating) + "☆".repeat(5 - rev.rating);
+              html += `
+                <div class="bg-gray-50 p-2.5 rounded-xl border text-xs space-y-1">
+                  <div class="flex justify-between items-center">
+                    <span class="text-brand-yellow font-extrabold text-sm">${starsStr}</span>
+                    <span class="text-[10px] text-gray-400">عميل تقييم</span>
+                  </div>
+                  ${
+                    rev.comment
+                      ? `<p class="text-gray-700 text-[11px] leading-relaxed">${rev.comment}</p>`
+                      : `<p class="text-gray-400 text-[10px] italic">بدون تعليق مكتوب</p>`
+                  }
+                </div>
+              `;
+            });
+            reviewsContainer.innerHTML = html;
           }
         });
       };
@@ -3193,7 +2516,7 @@
 
         let currentVal = select.value;
         let html = `<option value="">-- اختر مطعم موجود --</option>`;
-        sortRestaurantsForDisplay(window.restaurantsData).forEach((r) => {
+        window.restaurantsData.forEach((r) => {
           html += `<option value="${r.id}">${r.name} ${
             r.isClosed ? "(مغلق)" : "(مفتوح)"
           }</option>`;
@@ -3218,33 +2541,11 @@
         if (!restId) {
           editBox.classList.add("hidden");
           dependentSections.classList.add("hidden");
-          if (window.merchantReviewsUnsubscribe) {
-            window.merchantReviewsUnsubscribe();
-            window.merchantReviewsUnsubscribe = null;
-          }
-          window.merchantReviewsVisible = false;
-          window.currentMerchantReviews = [];
-          const reviewsSection = document.getElementById(
-            "merchant-reviews-section"
-          );
-          const reviewsBtn = document.getElementById("merchant-reviews-btn");
-          if (reviewsSection) reviewsSection.classList.add("hidden");
-          if (reviewsBtn) reviewsBtn.textContent = "التقييمات";
           return;
         }
 
         editBox.classList.remove("hidden");
         dependentSections.classList.remove("hidden");
-        window.merchantReviewsVisible = false;
-        const merchantReviewsSection = document.getElementById(
-          "merchant-reviews-section"
-        );
-        const merchantReviewsBtn = document.getElementById(
-          "merchant-reviews-btn"
-        );
-        if (merchantReviewsSection)
-          merchantReviewsSection.classList.add("hidden");
-        if (merchantReviewsBtn) merchantReviewsBtn.textContent = "التقييمات";
 
         const rest = window.restaurantsData.find((r) => r.id === restId);
         if (rest) {
@@ -3252,8 +2553,6 @@
             rest.name || "";
           document.getElementById("edit-restaurant-image").value =
             rest.image || "";
-          document.getElementById("edit-restaurant-display-order").value =
-            rest.displayOrder != null ? rest.displayOrder : "";
           updateRestaurantOpenStatusButtons(rest.isClosed === true);
           renderMerchantCurrentMenuList(rest);
         }
@@ -3271,21 +2570,6 @@
         window.currentMerchantRestaurantId = null;
         editBox.classList.add("hidden");
         dependentSections.classList.add("hidden");
-        if (window.merchantReviewsUnsubscribe) {
-          window.merchantReviewsUnsubscribe();
-          window.merchantReviewsUnsubscribe = null;
-        }
-        window.merchantReviewsVisible = false;
-        window.currentMerchantReviews = [];
-        const merchantReviewsSection = document.getElementById(
-          "merchant-reviews-section"
-        );
-        const merchantReviewsBtn = document.getElementById(
-          "merchant-reviews-btn"
-        );
-        if (merchantReviewsSection)
-          merchantReviewsSection.classList.add("hidden");
-        if (merchantReviewsBtn) merchantReviewsBtn.textContent = "التقييمات";
 
         newFields.classList.toggle("hidden");
       };
@@ -3357,102 +2641,12 @@
         reader.readAsDataURL(file);
       }
 
-      function restaurantHasDisplayOrder(rest) {
-        return (
-          Number.isInteger(Number(rest.displayOrder)) &&
-          Number(rest.displayOrder) >= 1
-        );
-      }
-
-      function restaurantCreationTime(rest) {
-        if (typeof rest.createdAt === "number") {
-          return rest.createdAt;
-        }
-
-        if (
-          rest.createdAt &&
-          typeof rest.createdAt.seconds === "number"
-        ) {
-          return (
-            rest.createdAt.seconds * 1000 +
-            (rest.createdAt.nanoseconds || 0) / 1000000
-          );
-        }
-
-        if (typeof rest.createdAt === "string") {
-          const parsed = Date.parse(rest.createdAt);
-          if (!Number.isNaN(parsed)) return parsed;
-        }
-
-        if (typeof rest.__restaurantSnapshotIndex === "number") {
-          return rest.__restaurantSnapshotIndex;
-        }
-
-        return 0;
-      }
-
-      function sortRestaurantsForDisplay(list) {
-        return [...list].sort((a, b) => {
-          const aHasOrder = restaurantHasDisplayOrder(a);
-          const bHasOrder = restaurantHasDisplayOrder(b);
-
-          if (aHasOrder && bHasOrder) {
-            return Number(a.displayOrder) - Number(b.displayOrder);
-          }
-
-          if (aHasOrder) return -1;
-          if (bHasOrder) return 1;
-
-          const creationDifference =
-            restaurantCreationTime(a) - restaurantCreationTime(b);
-
-          if (creationDifference !== 0) return creationDifference;
-
-          return String(a.id).localeCompare(String(b.id));
-        });
-      }
-
-      async function saveRestaurantDisplayOrder(
-        orderedRestaurants,
-        unrankedRestaurants = []
-      ) {
-        const updates = [];
-
-        orderedRestaurants.forEach((rest, index) => {
-          const newOrder = index + 1;
-          if (Number(rest.displayOrder) !== newOrder) {
-            updates.push(
-              updateDoc(doc(db, "restaurants", rest.id), {
-                displayOrder: newOrder,
-              })
-            );
-          }
-        });
-
-        unrankedRestaurants.forEach((rest) => {
-          if (rest.displayOrder != null) {
-            updates.push(
-              updateDoc(doc(db, "restaurants", rest.id), {
-                displayOrder: null,
-              })
-            );
-          }
-        });
-
-        if (updates.length > 0) {
-          await Promise.all(updates);
-        }
-      }
-
       window.saveNewRestaurant = async function () {
         const name = document
           .getElementById("new-restaurant-name")
           .value.trim();
         let imageUrl = document
           .getElementById("new-restaurant-image")
-          .value.trim();
-        const displayOrder = document
-          .getElementById("new-restaurant-display-order")
           .value.trim();
         const fileInput = document.getElementById("new-restaurant-file");
 
@@ -3463,88 +2657,28 @@
 
         if (fileInput.files && fileInput.files[0]) {
           compressAndConvertImage(fileInput.files[0], async (compressedUrl) => {
-            await createRestaurantInDb(name, compressedUrl, displayOrder);
+            await createRestaurantInDb(name, compressedUrl);
           });
         } else {
           await createRestaurantInDb(
             name,
             imageUrl ||
-              "https://images.unsplash.com/photo-1555396273-367ea4eb4db5",
-            displayOrder
+              "https://images.unsplash.com/photo-1555396273-367ea4eb4db5"
           );
         }
       };
 
-      window.createRestaurantInDb = async function (
-        name,
-        imageUrl,
-        displayOrder
-      ) {
+      window.createRestaurantInDb = async function (name, imageUrl) {
         try {
-          const parsedDisplayOrder =
-            displayOrder !== "" ? parseInt(displayOrder, 10) : null;
-
-          if (
-            displayOrder !== "" &&
-            (!Number.isInteger(parsedDisplayOrder) || parsedDisplayOrder < 1)
-          ) {
-            alert(
-              "ترتيب ظهور المطعم يجب أن يكون رقماً صحيحاً أكبر من أو يساوي 1."
-            );
-            return;
-          }
-
-          const existingRestaurants = [...window.restaurantsData];
-          const rankedRestaurants = sortRestaurantsForDisplay(
-            existingRestaurants.filter(restaurantHasDisplayOrder)
-          );
-          const unrankedRestaurants = sortRestaurantsForDisplay(
-            existingRestaurants.filter((rest) => !restaurantHasDisplayOrder(rest))
-          );
-
-          let newRestaurantDisplayOrder = null;
-
-          if (parsedDisplayOrder !== null) {
-            const targetIndex = Math.min(
-              Math.max(parsedDisplayOrder, 1),
-              rankedRestaurants.length + 1
-            ) - 1;
-
-            newRestaurantDisplayOrder = targetIndex + 1;
-          }
-
-          const newRestaurantRef = await addDoc(window.colRef, {
+          await addDoc(window.colRef, {
             name: name,
             image: imageUrl,
             isClosed: false,
             menu: [],
-            displayOrder: newRestaurantDisplayOrder,
-            createdAt: Date.now(),
           });
-
-          if (parsedDisplayOrder !== null) {
-            const targetIndex = newRestaurantDisplayOrder - 1;
-
-            rankedRestaurants.splice(targetIndex, 0, {
-              id: newRestaurantRef.id,
-              displayOrder: newRestaurantDisplayOrder,
-            });
-
-            await saveRestaurantDisplayOrder(rankedRestaurants);
-          } else {
-            await saveRestaurantDisplayOrder(
-              rankedRestaurants,
-              unrankedRestaurants
-            );
-          }
-
-          showActionSuccessModal(
-            `تم إضافة المطعم "${name}" بنجاح.`,
-            "تم إضافة المطعم بنجاح"
-          );
+          showActionSuccessModal(`تم إضافة المطعم "${name}" بنجاح.`, "تم إضافة المطعم بنجاح");
           document.getElementById("new-restaurant-name").value = "";
           document.getElementById("new-restaurant-image").value = "";
-          document.getElementById("new-restaurant-display-order").value = "";
           document.getElementById("new-restaurant-file").value = "";
           document
             .getElementById("new-restaurant-fields")
@@ -3554,7 +2688,6 @@
           alert("حدث خطأ أثناء إضافة المطعم.");
         }
       };
-
 
       window.updateCurrentRestaurant = async function () {
         const restId = window.currentMerchantRestaurantId;
@@ -3566,9 +2699,6 @@
         let imageUrl = document
           .getElementById("edit-restaurant-image")
           .value.trim();
-        const displayOrder = document
-          .getElementById("edit-restaurant-display-order")
-          .value.trim();
         const fileInput = document.getElementById("edit-restaurant-file");
 
         if (!name) {
@@ -3576,88 +2706,14 @@
           return;
         }
 
-        const parsedDisplayOrder =
-          displayOrder !== "" ? parseInt(displayOrder, 10) : null;
-
-        if (
-          displayOrder !== "" &&
-          (!Number.isInteger(parsedDisplayOrder) || parsedDisplayOrder < 1)
-        ) {
-          alert(
-            "ترتيب ظهور المطعم يجب أن يكون رقماً صحيحاً أكبر من أو يساوي 1."
-          );
-          return;
-        }
-
-        const currentRestaurant = window.restaurantsData.find(
-          (r) => r.id === restId
-        );
-        if (!currentRestaurant) return;
-
-        const existingRestaurants = window.restaurantsData.filter(
-          (r) => r.id !== restId
-        );
-        const rankedRestaurants = sortRestaurantsForDisplay(
-          existingRestaurants.filter(restaurantHasDisplayOrder)
-        );
-        const unrankedRestaurants = sortRestaurantsForDisplay(
-          existingRestaurants.filter((rest) => !restaurantHasDisplayOrder(rest))
-        );
-
-        if (parsedDisplayOrder !== null) {
-          const targetIndex = Math.min(
-            Math.max(parsedDisplayOrder, 1),
-            rankedRestaurants.length + 1
-          ) - 1;
-
-          rankedRestaurants.splice(targetIndex, 0, {
-            ...currentRestaurant,
-            displayOrder: parsedDisplayOrder,
-          });
-        } else {
-          unrankedRestaurants.push({
-            ...currentRestaurant,
-            displayOrder: null,
-          });
-          unrankedRestaurants.sort(
-            (a, b) => restaurantCreationTime(a) - restaurantCreationTime(b)
-          );
-        }
-
         const restRef = doc(db, "restaurants", restId);
-
         if (fileInput.files && fileInput.files[0]) {
           compressAndConvertImage(fileInput.files[0], async (compressedUrl) => {
-            try {
-              await updateDoc(restRef, {
-                name: name,
-                image: compressedUrl,
-                displayOrder: parsedDisplayOrder,
-              });
-
-              await saveRestaurantDisplayOrder(
-                rankedRestaurants,
-                unrankedRestaurants
-              );
-
-              showAppToast("تم تعديل المطعم بنجاح.");
-            } catch (err) {
-              console.error(err);
-              alert("حدث خطأ أثناء تعديل المطعم.");
-            }
+            await updateDoc(restRef, { name: name, image: compressedUrl });
+            showAppToast("تم تعديل المطعم بنجاح.");
           });
         } else {
-          await updateDoc(restRef, {
-            name: name,
-            image: imageUrl,
-            displayOrder: parsedDisplayOrder,
-          });
-
-          await saveRestaurantDisplayOrder(
-            rankedRestaurants,
-            unrankedRestaurants
-          );
-
+          await updateDoc(restRef, { name: name, image: imageUrl });
           showAppToast("تم تعديل المطعم بنجاح.");
         }
       };
@@ -3666,38 +2722,12 @@
         const restId = window.currentMerchantRestaurantId;
         if (!restId) return;
 
-        if (
-          await showDeleteConfirmation(
-            "هل أنت متأكد من حذف هذا المطعم نهائياً بكل أكلاته؟"
-          )
-        ) {
+        if (await showDeleteConfirmation("هل أنت متأكد من حذف هذا المطعم نهائياً بكل أكلاته؟")) {
           try {
-            const remainingRestaurants = window.restaurantsData.filter(
-              (r) => r.id !== restId
-            );
-            const rankedRestaurants = sortRestaurantsForDisplay(
-              remainingRestaurants.filter(restaurantHasDisplayOrder)
-            );
-            const unrankedRestaurants = sortRestaurantsForDisplay(
-              remainingRestaurants.filter(
-                (rest) => !restaurantHasDisplayOrder(rest)
-              )
-            );
-
             await deleteDoc(doc(db, "restaurants", restId));
-            await saveRestaurantDisplayOrder(
-              rankedRestaurants,
-              unrankedRestaurants
-            );
             showAppToast("تم حذف المطعم بنجاح.");
             document.getElementById("restaurant-select-dropdown").value = "";
             window.currentMerchantRestaurantId = null;
-            if (window.merchantReviewsUnsubscribe) {
-              window.merchantReviewsUnsubscribe();
-              window.merchantReviewsUnsubscribe = null;
-            }
-            window.merchantReviewsVisible = false;
-            window.currentMerchantReviews = [];
             document
               .getElementById("edit-restaurant-box")
               .classList.add("hidden");
@@ -3734,13 +2764,9 @@
         }
 
         if (options.length === 0) {
-          const firstPrice = document
-            .getElementById("opt-price-1")
-            .value.trim();
+          const firstPrice = document.getElementById("opt-price-1").value.trim();
           if (!firstPrice) {
-            alert(
-              "يرجى إدخال السعر في خانة السعر الأول، أو إضافة اسم وسعر لأي حجم."
-            );
+            alert("يرجى إدخال السعر في خانة السعر الأول، أو إضافة اسم وسعر لأي حجم.");
             return;
           }
           options.push({ label: "وان سايز", price: parseFloat(firstPrice) });
@@ -3766,10 +2792,7 @@
           rest.menu = menu;
           renderMerchantCurrentMenuList(rest);
 
-          showActionSuccessModal(
-            `تم إضافة الوجبة "${name}" إلى منيو المطعم بنجاح.`,
-            "تم إضافة الوجبة بنجاح"
-          );
+          showActionSuccessModal(`تم إضافة الوجبة "${name}" إلى منيو المطعم بنجاح.`, "تم إضافة الوجبة بنجاح");
 
           document.getElementById("new-item-name").value = "";
           document.getElementById("new-item-desc").value = "";
@@ -3780,258 +2803,6 @@
         } catch (err) {
           console.error(err);
           alert("حدث خطأ أثناء إضافة الوجبة.");
-        }
-      };
-
-      window.escapeMerchantReviewHtml = function (value) {
-        return String(value ?? "")
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
-      };
-
-      window.formatMerchantReviewDate = function (review) {
-        let date = null;
-        if (review?.createdAt?.seconds) {
-          date = new Date(
-            review.createdAt.seconds * 1000 +
-              Math.floor((review.createdAt.nanoseconds || 0) / 1000000)
-          );
-        } else if (review?.createdAt) {
-          const parsed = new Date(review.createdAt);
-          if (!Number.isNaN(parsed.getTime())) date = parsed;
-        }
-        if (!date || Number.isNaN(date.getTime())) return "غير محدد";
-        return date.toLocaleString("ar-EG", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      };
-
-      window.renderMerchantReviews = function () {
-        const container = document.getElementById("merchant-reviews-list");
-        if (!container) return;
-
-        const reviews = window.currentMerchantReviews || [];
-        if (reviews.length === 0) {
-          container.innerHTML =
-            '<p class="text-gray-400 text-center py-4">لا توجد تقييمات مضافة لهذا المطعم بعد.</p>';
-          return;
-        }
-
-        let html = "";
-        reviews.forEach((review) => {
-          const rating = Math.max(0, Math.min(5, Number(review.rating) || 0));
-          const starsStr = "★".repeat(rating) + "☆".repeat(5 - rating);
-          const customerName =
-            review.customerName || review.name || review.userName || "";
-          const customerHtml = customerName
-            ? `<p class="text-[10px] text-gray-500">العميل: ${window.escapeMerchantReviewHtml(
-                customerName
-              )}</p>`
-            : "";
-          const commentHtml = review.comment
-            ? `<p class="text-gray-700 text-[11px] leading-relaxed break-words">${window.escapeMerchantReviewHtml(
-                review.comment
-              )}</p>`
-            : `<p class="text-gray-400 text-[10px] italic">بدون تعليق مكتوب</p>`;
-
-          html += `
-            <div class="bg-gray-50 p-3 rounded-xl border space-y-2">
-              <div class="flex items-start justify-between gap-2">
-                <div class="min-w-0 flex-1">
-                  <div class="text-brand-yellow font-extrabold text-base" dir="ltr">${starsStr}</div>
-                  ${customerHtml}
-                  <p class="text-[10px] text-gray-400 mt-0.5">${window.formatMerchantReviewDate(
-                    review
-                  )}</p>
-                </div>
-                <div class="flex gap-1 shrink-0">
-                  <button
-                    type="button"
-                    onclick="openEditReviewModal('${review.id}')"
-                    class="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-lg font-bold text-[11px]"
-                  >
-                    تعديل
-                  </button>
-                  <button
-                    type="button"
-                    onclick="deleteMerchantReview('${review.id}')"
-                    class="bg-red-50 text-red-600 px-2.5 py-1 rounded-lg font-bold text-[11px]"
-                  >
-                    حذف
-                  </button>
-                </div>
-              </div>
-              ${commentHtml}
-            </div>
-          `;
-        });
-
-        container.innerHTML = html;
-      };
-
-      window.loadMerchantReviews = function (restId) {
-        if (!restId) return;
-
-        if (window.merchantReviewsUnsubscribe) {
-          window.merchantReviewsUnsubscribe();
-          window.merchantReviewsUnsubscribe = null;
-        }
-
-        window.merchantReviewsUnsubscribe = onSnapshot(
-          window.reviewsRef,
-          (snapshot) => {
-            if (window.currentMerchantRestaurantId !== restId) return;
-
-            const reviews = [];
-            snapshot.forEach((docSnap) => {
-              const data = docSnap.data();
-              if (data.restaurantId === restId) {
-                reviews.push({
-                  id: docSnap.id,
-                  ...data,
-                });
-              }
-            });
-
-            reviews.sort(
-              (a, b) =>
-                (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0)
-            );
-
-            window.currentMerchantReviews = reviews;
-            window.renderMerchantReviews();
-          },
-          (err) => {
-            console.error(err);
-            const container = document.getElementById("merchant-reviews-list");
-            if (container) {
-              container.innerHTML =
-                '<p class="text-red-500 text-center py-4">حدث خطأ أثناء جلب التقييمات.</p>';
-            }
-          }
-        );
-      };
-
-      window.toggleMerchantReviews = function () {
-        const restId = window.currentMerchantRestaurantId;
-        const section = document.getElementById("merchant-reviews-section");
-        const button = document.getElementById("merchant-reviews-btn");
-        if (!restId || !section) {
-          if (!restId) alert("يرجى اختيار مطعم أولاً.");
-          return;
-        }
-
-        window.merchantReviewsVisible = !window.merchantReviewsVisible;
-
-        if (window.merchantReviewsVisible) {
-          section.classList.remove("hidden");
-          if (button) button.textContent = "إخفاء التقييمات";
-          window.loadMerchantReviews(restId);
-        } else {
-          section.classList.add("hidden");
-          if (button) button.textContent = "التقييمات";
-        }
-      };
-
-      window.setEditReviewRating = function (rating) {
-        window.currentEditingReviewRating = Number(rating) || 0;
-        const buttons = document.querySelectorAll(
-          "#edit-review-star-selector .edit-review-star-btn"
-        );
-        buttons.forEach((btn, idx) => {
-          btn.style.color =
-            idx < window.currentEditingReviewRating ? "#FFB800" : "#D1D5DB";
-        });
-      };
-
-      window.openEditReviewModal = function (reviewId) {
-        const review = (window.currentMerchantReviews || []).find(
-          (item) => item.id === reviewId
-        );
-        if (!review) return;
-
-        document.getElementById("edit-review-id").value = review.id;
-        document.getElementById("edit-review-comment").value =
-          review.comment || "";
-        window.setEditReviewRating(review.rating || 0);
-        document.getElementById("edit-review-modal").classList.remove("hidden");
-      };
-
-      window.closeEditReviewModal = function () {
-        document.getElementById("edit-review-modal").classList.add("hidden");
-        document.getElementById("edit-review-id").value = "";
-        document.getElementById("edit-review-comment").value = "";
-        window.currentEditingReviewRating = 0;
-        window.setEditReviewRating(0);
-      };
-
-      window.saveEditedReview = async function () {
-        const restId = window.currentMerchantRestaurantId;
-        const reviewId = document.getElementById("edit-review-id").value;
-        if (!restId || !reviewId) return;
-
-        const comment = document
-          .getElementById("edit-review-comment")
-          .value.trim();
-        const rating = Number(window.currentEditingReviewRating) || 0;
-
-        if (rating < 1 || rating > 5) {
-          alert("يرجى تحديد عدد النجوم أولاً.");
-          return;
-        }
-
-        const review = (window.currentMerchantReviews || []).find(
-          (item) => item.id === reviewId
-        );
-        if (!review || review.restaurantId !== restId) {
-          alert("التقييم المحدد غير تابع للمطعم الحالي.");
-          return;
-        }
-
-        try {
-          await updateDoc(doc(db, "reviews", reviewId), {
-            rating: rating,
-            comment: comment,
-          });
-          window.closeEditReviewModal();
-          showAppToast("تم تعديل التقييم بنجاح.");
-        } catch (err) {
-          console.error(err);
-          alert("حدث خطأ أثناء تعديل التقييم.");
-        }
-      };
-
-      window.deleteMerchantReview = async function (reviewId) {
-        const restId = window.currentMerchantRestaurantId;
-        if (!restId || !reviewId) return;
-
-        const review = (window.currentMerchantReviews || []).find(
-          (item) => item.id === reviewId
-        );
-        if (!review || review.restaurantId !== restId) {
-          alert("التقييم المحدد غير تابع للمطعم الحالي.");
-          return;
-        }
-
-        if (
-          !(await showDeleteConfirmation("هل أنت متأكد من حذف هذا التقييم؟"))
-        ) {
-          return;
-        }
-
-        try {
-          await deleteDoc(doc(db, "reviews", reviewId));
-          showAppToast("تم حذف التقييم بنجاح.");
-        } catch (err) {
-          console.error(err);
-          alert("حدث خطأ أثناء حذف التقييم.");
         }
       };
 
@@ -4153,9 +2924,7 @@
         }
 
         if (options.length === 0) {
-          const firstPrice = document
-            .getElementById("edit-opt-price-1")
-            .value.trim();
+          const firstPrice = document.getElementById("edit-opt-price-1").value.trim();
           if (!firstPrice) {
             alert("يجب وضع سعر واحد على الأقل.");
             return;
@@ -4219,10 +2988,7 @@
       window.formatOrderTime = function (ord) {
         let date = null;
         if (ord?.createdAt?.seconds) {
-          date = new Date(
-            ord.createdAt.seconds * 1000 +
-              Math.floor((ord.createdAt.nanoseconds || 0) / 1000000)
-          );
+          date = new Date(ord.createdAt.seconds * 1000 + Math.floor((ord.createdAt.nanoseconds || 0) / 1000000));
         } else if (ord?.createdAtDate) {
           date = new Date(ord.createdAtDate);
         }
@@ -4247,99 +3013,53 @@
           completed: ["تم التوصيل", "bg-green-100 text-green-700"],
           rejected: ["تم الرفض", "bg-red-100 text-red-700"],
         };
-        const status = statusMap[ord.status] || [
-          "قيد الانتظار",
-          "bg-gray-100 text-gray-700",
-        ];
+        const status = statusMap[ord.status] || ["قيد الانتظار", "bg-gray-100 text-gray-700"];
         let itemsHtml = "";
         (ord.items || []).forEach((it) => {
           itemsHtml += `
-            <div class="bg-gray-50 rounded-xl p-3 border space-y-2">
+            <div class="bg-gray-50 rounded-xl p-3 border space-y-1">
               <div class="flex justify-between gap-2">
-                <span class="font-extrabold text-sm text-gray-900">${
-                  it.name || "وجبة"
-                }</span>
-                <span class="font-extrabold text-base text-brand-black whitespace-nowrap">× ${
-                  it.quantity || 0
-                }</span>
+                <span class="font-extrabold text-sm text-gray-900">${it.name || "وجبة"}</span>
+                <span class="font-extrabold text-brand-black">× ${it.quantity || 0}</span>
               </div>
-              <div class="flex justify-between items-center gap-2 text-xs">
-                <span class="font-extrabold text-brand-black">${
-                  it.optionLabel ? `الحجم: ${it.optionLabel}` : "وان سايز"
-                }</span>
-                <span class="font-extrabold text-sm text-brand-black whitespace-nowrap">${
-                  (Number(it.price) || 0) * (Number(it.quantity) || 0)
-                } ج.م</span>
+              <div class="flex justify-between text-[11px] text-gray-500">
+                <span>${it.optionLabel ? `الحجم: ${it.optionLabel}` : "وان سايز"}</span>
+                <span>${(Number(it.price) || 0) * (Number(it.quantity) || 0)} ج.م</span>
               </div>
             </div>`;
         });
 
-        document.getElementById(
-          "order-details-code"
-        ).textContent = `رقم الطلب: ${ord.orderCode || "-"}`;
+        document.getElementById("order-details-code").textContent = `رقم الطلب: ${ord.orderCode || "-"}`;
         document.getElementById("order-details-content").innerHTML = `
           <div class="grid grid-cols-2 gap-2">
-            <div class="bg-gray-50 rounded-xl p-3"><span class="text-[10px] text-gray-400 block">اسم العميل</span><span class="font-extrabold text-sm text-gray-900">${
-              ord.customerName || "-"
-            }</span></div>
-            <div class="bg-gray-50 rounded-xl p-3"><span class="text-[10px] text-gray-400 block">رقم التليفون</span><span class="font-extrabold text-sm text-gray-900">${
-              ord.customerPhone || "-"
-            }</span></div>
+            <div class="bg-gray-50 rounded-xl p-3"><span class="text-[10px] text-gray-400 block">اسم العميل</span><span class="font-extrabold text-sm text-gray-900">${ord.customerName || "-"}</span></div>
+            <div class="bg-gray-50 rounded-xl p-3"><span class="text-[10px] text-gray-400 block">رقم التليفون</span><span class="font-extrabold text-sm text-gray-900">${ord.customerPhone || "-"}</span></div>
           </div>
-          <div class="bg-gray-50 rounded-xl p-3"><span class="text-[10px] text-gray-400 block">المطعم</span><span class="font-extrabold text-sm text-gray-900">${
-            ord.restaurantName || "مطعم غير محدد"
-          }</span></div>
-          <div class="bg-gray-50 rounded-xl p-3"><span class="text-[10px] text-gray-400 block">وقت الطلب</span><span class="font-extrabold text-sm text-gray-900">${formatOrderTime(
-            ord
-          )}</span></div>
-          <div class="bg-gray-50 rounded-xl p-3"><span class="text-[10px] text-gray-400 block">العنوان</span><span class="font-bold text-sm text-gray-900 break-words">${
-            ord.customerAddress || "-"
-          }</span></div>
-          ${
-            ord.customerNotes
-              ? `<div class="bg-amber-50 rounded-xl p-3"><span class="text-[10px] text-gray-500 block">ملاحظات</span><span class="font-bold text-sm text-gray-900 break-words">${ord.customerNotes}</span></div>`
-              : ""
-          }
+          <div class="bg-gray-50 rounded-xl p-3"><span class="text-[10px] text-gray-400 block">المطعم</span><span class="font-extrabold text-sm text-gray-900">${ord.restaurantName || "مطعم غير محدد"}</span></div>
+          <div class="bg-gray-50 rounded-xl p-3"><span class="text-[10px] text-gray-400 block">وقت الطلب</span><span class="font-extrabold text-sm text-gray-900">${formatOrderTime(ord)}</span></div>
+          <div class="bg-gray-50 rounded-xl p-3"><span class="text-[10px] text-gray-400 block">العنوان</span><span class="font-bold text-sm text-gray-900 break-words">${ord.customerAddress || "-"}</span></div>
+          ${ord.customerNotes ? `<div class="bg-amber-50 rounded-xl p-3"><span class="text-[10px] text-gray-500 block">ملاحظات</span><span class="font-bold text-sm text-gray-900 break-words">${ord.customerNotes}</span></div>` : ""}
           <div class="flex items-center justify-between pt-1">
             <span class="text-sm font-extrabold text-gray-900">حالة الطلب</span>
-            <span class="px-3 py-1 rounded-lg text-xs font-extrabold ${
-              status[1]
-            }">${status[0]}</span>
+            <span class="px-3 py-1 rounded-lg text-xs font-extrabold ${status[1]}">${status[0]}</span>
           </div>
           <div class="space-y-2 pt-1">
             <p class="font-extrabold text-sm text-gray-900">الوجبات المطلوبة</p>
-            ${
-              itemsHtml ||
-              `<div class="bg-gray-50 rounded-xl p-3 text-center text-gray-400">لا توجد تفاصيل للوجبات.</div>`
-            }
+            ${itemsHtml || `<div class="bg-gray-50 rounded-xl p-3 text-center text-gray-400">لا توجد تفاصيل للوجبات.</div>`}
           </div>
           <div class="flex justify-between items-center bg-brand-black text-white rounded-xl p-3">
             <span class="font-extrabold text-sm">التكلفة الإجمالية</span>
-            <span class="font-extrabold text-brand-yellow text-base">${
-              ord.totalPrice || 0
-            } ج.م</span>
+            <span class="font-extrabold text-brand-yellow text-base">${ord.totalPrice || 0} ج.م</span>
           </div>
           <div class="grid grid-cols-2 gap-2 pt-1">
-            <button onclick="updateOrderStatus('${
-              ord.id
-            }', 'confirmed')" class="bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs">تأكيد</button>
-            <button onclick="updateOrderStatus('${
-              ord.id
-            }', 'delivering')" class="bg-purple-600 text-white font-bold py-2.5 rounded-xl text-xs">توصيل</button>
-            <button onclick="updateOrderStatus('${
-              ord.id
-            }', 'completed')" class="bg-green-600 text-white font-bold py-2.5 rounded-xl text-xs">تم</button>
-            <button onclick="updateOrderStatus('${
-              ord.id
-            }', 'rejected')" class="bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs">رفض</button>
+            <button onclick="updateOrderStatus('${ord.id}', 'confirmed')" class="bg-blue-600 text-white font-bold py-2.5 rounded-xl text-xs">تأكيد</button>
+            <button onclick="updateOrderStatus('${ord.id}', 'delivering')" class="bg-purple-600 text-white font-bold py-2.5 rounded-xl text-xs">توصيل</button>
+            <button onclick="updateOrderStatus('${ord.id}', 'completed')" class="bg-green-600 text-white font-bold py-2.5 rounded-xl text-xs">تم</button>
+            <button onclick="updateOrderStatus('${ord.id}', 'rejected')" class="bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs">رفض</button>
           </div>
-          <button onclick="closeOrderDetailsModal(); deleteOrder('${
-            ord.id
-          }')" class="w-full bg-gray-900 text-white font-bold py-2.5 rounded-xl text-xs">حذف الطلب</button>
+          <button onclick="closeOrderDetailsModal(); deleteOrder('${ord.id}')" class="w-full bg-gray-900 text-white font-bold py-2.5 rounded-xl text-xs">حذف الطلب</button>
         `;
-        document
-          .getElementById("order-details-modal")
-          .classList.remove("hidden");
+        document.getElementById("order-details-modal").classList.remove("hidden");
         if (window.lucide) lucide.createIcons();
       };
 
@@ -4351,85 +3071,44 @@
         const container = document.getElementById("merchant-orders-container");
         if (!container) return;
 
-        const query = (window.merchantOrderSearchQuery || "")
-          .trim()
-          .toLowerCase();
+        const query = (window.merchantOrderSearchQuery || "").trim().toLowerCase();
         let filtered = window.allOrders.filter((ord) => {
-          const matchStatus =
-            window.currentOrderStatusFilter === "all" ||
-            ord.status === window.currentOrderStatusFilter;
-          const matchDate =
-            !window.currentDateFilter ||
-            ord.createdAtDate === window.currentDateFilter;
+          const matchStatus = window.currentOrderStatusFilter === "all" || ord.status === window.currentOrderStatusFilter;
+          const matchDate = !window.currentDateFilter || ord.createdAtDate === window.currentDateFilter;
           if (!matchStatus || !matchDate) return false;
           if (!query) return true;
-          const searchable = [
-            ord.orderCode,
-            ord.restaurantName,
-            ord.customerName,
-            ord.customerPhone,
-            ord.customerAddress,
-            ord.customerNotes,
-            ...(ord.items || []).flatMap((it) => [
-              it.name,
-              it.optionLabel,
-              it.quantity,
-              it.price,
-            ]),
-          ]
-            .filter((value) => value !== undefined && value !== null)
-            .join(" ")
-            .toLowerCase();
+          const searchable = [ord.orderCode, ord.restaurantName, ord.customerName, ord.customerPhone, ord.customerAddress, ord.customerNotes, ...(ord.items || []).flatMap((it) => [it.name, it.optionLabel, it.quantity, it.price])]
+            .filter((value) => value !== undefined && value !== null).join(" ").toLowerCase();
           return searchable.includes(query);
         });
 
         filtered.sort((a, b) => {
-          const aTime = a.createdAt?.seconds
-            ? a.createdAt.seconds * 1000 +
-              (a.createdAt.nanoseconds || 0) / 1000000
-            : 0;
-          const bTime = b.createdAt?.seconds
-            ? b.createdAt.seconds * 1000 +
-              (b.createdAt.nanoseconds || 0) / 1000000
-            : 0;
+          const aTime = a.createdAt?.seconds ? a.createdAt.seconds * 1000 + (a.createdAt.nanoseconds || 0) / 1000000 : 0;
+          const bTime = b.createdAt?.seconds ? b.createdAt.seconds * 1000 + (b.createdAt.nanoseconds || 0) / 1000000 : 0;
           if (aTime !== bTime) return bTime - aTime;
           return 0;
         });
 
         if (filtered.length === 0) {
-          container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm bg-white rounded-2xl p-4">${
-            query
-              ? `لا توجد طلبات مطابقة للبحث "${query}".`
-              : "لا توجد طلبات مطابقة."
-          }</div>`;
+          container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm bg-white rounded-2xl p-4">${query ? `لا توجد طلبات مطابقة للبحث "${query}".` : "لا توجد طلبات مطابقة."}</div>`;
           return;
         }
 
         let html = "";
         filtered.forEach((ord) => {
           html += `
-            <button type="button" onclick="openOrderDetailsModal('${
-              ord.id
-            }')" class="w-full text-right bg-white p-3 rounded-2xl border border-gray-100 shadow-sm hover:border-brand-yellow transition">
+            <button type="button" onclick="openOrderDetailsModal('${ord.id}')" class="w-full text-right bg-white p-3 rounded-2xl border border-gray-100 shadow-sm hover:border-brand-yellow transition">
               <div class="flex items-center justify-between gap-3">
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-2 mb-1">
-                    <span class="font-extrabold text-sm text-brand-black">${
-                      ord.customerName || "-"
-                    }</span>
+                    <span class="font-extrabold text-sm text-brand-black">${ord.customerPhone || "-"}</span>
                     <span class="text-[10px] text-gray-400">•</span>
-                    <span class="text-[11px] font-bold text-gray-500 truncate">${
-                      ord.orderCode || "-"
-                    }</span>
+                    <span class="text-[11px] font-bold text-gray-500 truncate">${ord.orderCode || "-"}</span>
                   </div>
-                  <p class="font-extrabold text-sm text-gray-900 truncate">${
-                    ord.restaurantName || "مطعم غير محدد"
-                  }</p>
+                  <p class="font-extrabold text-sm text-gray-900 truncate">${ord.restaurantName || "مطعم غير محدد"}</p>
                 </div>
                 <div class="shrink-0 text-left">
-                  <p class="text-xs font-extrabold text-brand-black">${formatOrderTime(
-                    ord
-                  )}</p>
+                  <p class="text-xs font-extrabold text-brand-black">${formatOrderTime(ord)}</p>
                   <p class="text-[10px] text-gray-400 mt-1">اضغط للتفاصيل</p>
                 </div>
               </div>
@@ -4480,7 +3159,6 @@
         if (typeof initApp === "function") {
           initApp();
         }
-        updateCartBar();
       });
     </script>
   </body>
