@@ -40,6 +40,18 @@
         }
       })();
     </script>
+    <script>
+      // WebView Back Test: اختبار استقبال زر Back عبر popstate فقط.
+      window.addEventListener("popstate", function () {
+        console.log("WEBVIEW_BACK_TEST");
+      });
+
+      window.history.pushState(
+        { __waslha_bm_back_test: true },
+        document.title,
+        window.location.href
+      );
+    </script>
     <title>وصلها BM | Check-In</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
