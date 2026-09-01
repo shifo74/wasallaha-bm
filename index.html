@@ -1666,6 +1666,32 @@
       </div>
     </div>
 
+    <!-- Customer Data Validation Modal -->
+    <div
+      id="customer-data-validation-modal"
+      class="fixed inset-0 bg-black/70 z-[210] hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white w-full max-w-sm rounded-3xl p-6 text-center space-y-4 shadow-2xl"
+      >
+        <div
+          class="w-14 h-14 bg-brand-yellow text-brand-black rounded-full flex items-center justify-center mx-auto"
+        >
+          <i data-lucide="alert-circle" class="w-8 h-8"></i>
+        </div>
+        <p class="font-extrabold text-base text-brand-black leading-relaxed">
+          يرجى مراجعة البيانات وكتابتها بطريقة صحيحة
+        </p>
+        <button
+          type="button"
+          onclick="closeCustomerDataValidationModal()"
+          class="w-full bg-brand-black text-brand-yellow font-extrabold py-3 rounded-xl text-xs shadow"
+        >
+          موافق
+        </button>
+      </div>
+    </div>
+
     <!-- Order Success Modal -->
     <div
       id="success-modal"
@@ -1904,8 +1930,13 @@
       window.initApp = function () {
         onSnapshot(window.colRef, (snapshot) => {
           window.restaurantsData = [];
+          let restaurantSnapshotIndex = 0;
           snapshot.forEach((docSnap) => {
-            window.restaurantsData.push({ id: docSnap.id, ...docSnap.data() });
+            window.restaurantsData.push({
+              id: docSnap.id,
+              ...docSnap.data(),
+              __restaurantSnapshotIndex: restaurantSnapshotIndex++,
+            });
           });
           renderRestaurantsList();
           populateMerchantDropdown();
@@ -2012,21 +2043,7 @@
           return nameMatch || menuMatch;
         });
 
-        filtered.sort((a, b) => {
-          const aHasOrder =
-            Number.isInteger(Number(a.displayOrder)) &&
-            Number(a.displayOrder) >= 1;
-          const bHasOrder =
-            Number.isInteger(Number(b.displayOrder)) &&
-            Number(b.displayOrder) >= 1;
-
-          if (aHasOrder && bHasOrder) {
-            return Number(a.displayOrder) - Number(b.displayOrder);
-          }
-          if (aHasOrder) return -1;
-          if (bHasOrder) return 1;
-          return 0;
-        });
+        filtered = sortRestaurantsForDisplay(filtered);
 
         if (filtered.length === 0) {
           container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs bg-white rounded-2xl p-4">لا توجد نتائج بحث مطابقة لـ "${query}"</div>`;
@@ -2547,19 +2564,27 @@
         window.receiveType = "delivery";
       };
 
+      window.showCustomerDataValidationModal = function () {
+        document
+          .getElementById("customer-data-validation-modal")
+          .classList.remove("hidden");
+        if (window.lucide) lucide.createIcons();
+      };
+
+      window.closeCustomerDataValidationModal = function () {
+        document
+          .getElementById("customer-data-validation-modal")
+          .classList.add("hidden");
+      };
+
       window.submitOrder = async function () {
         const name = document.getElementById("cust-name").value.trim();
         const phone = document.getElementById("cust-phone").value.trim();
         const address = document.getElementById("cust-address").value.trim();
         const notes = document.getElementById("cust-notes").value.trim();
 
-        if (!name || !phone || !address) {
-          alert("يرجى إكمال بيانات الاسم ورقم الموبايل وعنوان التوصيل.");
-          return;
-        }
-
-        if (phone.length < 11) {
-          alert("يرجى إدخال رقم موبايل صحيح مكون من 11 رقم.");
+        if (!name || !phone || !address || !/^\d{11}$/.test(phone)) {
+          showCustomerDataValidationModal();
           return;
         }
 
@@ -3168,7 +3193,7 @@
 
         let currentVal = select.value;
         let html = `<option value="">-- اختر مطعم موجود --</option>`;
-        window.restaurantsData.forEach((r) => {
+        sortRestaurantsForDisplay(window.restaurantsData).forEach((r) => {
           html += `<option value="${r.id}">${r.name} ${
             r.isClosed ? "(مغلق)" : "(مفتوح)"
           }</option>`;
@@ -3332,6 +3357,93 @@
         reader.readAsDataURL(file);
       }
 
+      function restaurantHasDisplayOrder(rest) {
+        return (
+          Number.isInteger(Number(rest.displayOrder)) &&
+          Number(rest.displayOrder) >= 1
+        );
+      }
+
+      function restaurantCreationTime(rest) {
+        if (typeof rest.createdAt === "number") {
+          return rest.createdAt;
+        }
+
+        if (
+          rest.createdAt &&
+          typeof rest.createdAt.seconds === "number"
+        ) {
+          return (
+            rest.createdAt.seconds * 1000 +
+            (rest.createdAt.nanoseconds || 0) / 1000000
+          );
+        }
+
+        if (typeof rest.createdAt === "string") {
+          const parsed = Date.parse(rest.createdAt);
+          if (!Number.isNaN(parsed)) return parsed;
+        }
+
+        if (typeof rest.__restaurantSnapshotIndex === "number") {
+          return rest.__restaurantSnapshotIndex;
+        }
+
+        return 0;
+      }
+
+      function sortRestaurantsForDisplay(list) {
+        return [...list].sort((a, b) => {
+          const aHasOrder = restaurantHasDisplayOrder(a);
+          const bHasOrder = restaurantHasDisplayOrder(b);
+
+          if (aHasOrder && bHasOrder) {
+            return Number(a.displayOrder) - Number(b.displayOrder);
+          }
+
+          if (aHasOrder) return -1;
+          if (bHasOrder) return 1;
+
+          const creationDifference =
+            restaurantCreationTime(a) - restaurantCreationTime(b);
+
+          if (creationDifference !== 0) return creationDifference;
+
+          return String(a.id).localeCompare(String(b.id));
+        });
+      }
+
+      async function saveRestaurantDisplayOrder(
+        orderedRestaurants,
+        unrankedRestaurants = []
+      ) {
+        const updates = [];
+
+        orderedRestaurants.forEach((rest, index) => {
+          const newOrder = index + 1;
+          if (Number(rest.displayOrder) !== newOrder) {
+            updates.push(
+              updateDoc(doc(db, "restaurants", rest.id), {
+                displayOrder: newOrder,
+              })
+            );
+          }
+        });
+
+        unrankedRestaurants.forEach((rest) => {
+          if (rest.displayOrder != null) {
+            updates.push(
+              updateDoc(doc(db, "restaurants", rest.id), {
+                displayOrder: null,
+              })
+            );
+          }
+        });
+
+        if (updates.length > 0) {
+          await Promise.all(updates);
+        }
+      }
+
       window.saveNewRestaurant = async function () {
         const name = document
           .getElementById("new-restaurant-name")
@@ -3382,13 +3494,50 @@
             return;
           }
 
-          await addDoc(window.colRef, {
+          const existingRestaurants = [...window.restaurantsData];
+          const rankedRestaurants = sortRestaurantsForDisplay(
+            existingRestaurants.filter(restaurantHasDisplayOrder)
+          );
+          const unrankedRestaurants = sortRestaurantsForDisplay(
+            existingRestaurants.filter((rest) => !restaurantHasDisplayOrder(rest))
+          );
+
+          let newRestaurantDisplayOrder = null;
+
+          if (parsedDisplayOrder !== null) {
+            const targetIndex = Math.min(
+              Math.max(parsedDisplayOrder, 1),
+              rankedRestaurants.length + 1
+            ) - 1;
+
+            newRestaurantDisplayOrder = targetIndex + 1;
+          }
+
+          const newRestaurantRef = await addDoc(window.colRef, {
             name: name,
             image: imageUrl,
             isClosed: false,
             menu: [],
-            displayOrder: parsedDisplayOrder,
+            displayOrder: newRestaurantDisplayOrder,
+            createdAt: Date.now(),
           });
+
+          if (parsedDisplayOrder !== null) {
+            const targetIndex = newRestaurantDisplayOrder - 1;
+
+            rankedRestaurants.splice(targetIndex, 0, {
+              id: newRestaurantRef.id,
+              displayOrder: newRestaurantDisplayOrder,
+            });
+
+            await saveRestaurantDisplayOrder(rankedRestaurants);
+          } else {
+            await saveRestaurantDisplayOrder(
+              rankedRestaurants,
+              unrankedRestaurants
+            );
+          }
+
           showActionSuccessModal(
             `تم إضافة المطعم "${name}" بنجاح.`,
             "تم إضافة المطعم بنجاح"
@@ -3405,6 +3554,7 @@
           alert("حدث خطأ أثناء إضافة المطعم.");
         }
       };
+
 
       window.updateCurrentRestaurant = async function () {
         const restId = window.currentMerchantRestaurantId;
@@ -3439,15 +3589,62 @@
           return;
         }
 
+        const currentRestaurant = window.restaurantsData.find(
+          (r) => r.id === restId
+        );
+        if (!currentRestaurant) return;
+
+        const existingRestaurants = window.restaurantsData.filter(
+          (r) => r.id !== restId
+        );
+        const rankedRestaurants = sortRestaurantsForDisplay(
+          existingRestaurants.filter(restaurantHasDisplayOrder)
+        );
+        const unrankedRestaurants = sortRestaurantsForDisplay(
+          existingRestaurants.filter((rest) => !restaurantHasDisplayOrder(rest))
+        );
+
+        if (parsedDisplayOrder !== null) {
+          const targetIndex = Math.min(
+            Math.max(parsedDisplayOrder, 1),
+            rankedRestaurants.length + 1
+          ) - 1;
+
+          rankedRestaurants.splice(targetIndex, 0, {
+            ...currentRestaurant,
+            displayOrder: parsedDisplayOrder,
+          });
+        } else {
+          unrankedRestaurants.push({
+            ...currentRestaurant,
+            displayOrder: null,
+          });
+          unrankedRestaurants.sort(
+            (a, b) => restaurantCreationTime(a) - restaurantCreationTime(b)
+          );
+        }
+
         const restRef = doc(db, "restaurants", restId);
+
         if (fileInput.files && fileInput.files[0]) {
           compressAndConvertImage(fileInput.files[0], async (compressedUrl) => {
-            await updateDoc(restRef, {
-              name: name,
-              image: compressedUrl,
-              displayOrder: parsedDisplayOrder,
-            });
-            showAppToast("تم تعديل المطعم بنجاح.");
+            try {
+              await updateDoc(restRef, {
+                name: name,
+                image: compressedUrl,
+                displayOrder: parsedDisplayOrder,
+              });
+
+              await saveRestaurantDisplayOrder(
+                rankedRestaurants,
+                unrankedRestaurants
+              );
+
+              showAppToast("تم تعديل المطعم بنجاح.");
+            } catch (err) {
+              console.error(err);
+              alert("حدث خطأ أثناء تعديل المطعم.");
+            }
           });
         } else {
           await updateDoc(restRef, {
@@ -3455,6 +3652,12 @@
             image: imageUrl,
             displayOrder: parsedDisplayOrder,
           });
+
+          await saveRestaurantDisplayOrder(
+            rankedRestaurants,
+            unrankedRestaurants
+          );
+
           showAppToast("تم تعديل المطعم بنجاح.");
         }
       };
@@ -3469,7 +3672,23 @@
           )
         ) {
           try {
+            const remainingRestaurants = window.restaurantsData.filter(
+              (r) => r.id !== restId
+            );
+            const rankedRestaurants = sortRestaurantsForDisplay(
+              remainingRestaurants.filter(restaurantHasDisplayOrder)
+            );
+            const unrankedRestaurants = sortRestaurantsForDisplay(
+              remainingRestaurants.filter(
+                (rest) => !restaurantHasDisplayOrder(rest)
+              )
+            );
+
             await deleteDoc(doc(db, "restaurants", restId));
+            await saveRestaurantDisplayOrder(
+              rankedRestaurants,
+              unrankedRestaurants
+            );
             showAppToast("تم حذف المطعم بنجاح.");
             document.getElementById("restaurant-select-dropdown").value = "";
             window.currentMerchantRestaurantId = null;
@@ -4035,20 +4254,20 @@
         let itemsHtml = "";
         (ord.items || []).forEach((it) => {
           itemsHtml += `
-            <div class="bg-gray-50 rounded-xl p-3 border space-y-1">
+            <div class="bg-gray-50 rounded-xl p-3 border space-y-2">
               <div class="flex justify-between gap-2">
                 <span class="font-extrabold text-sm text-gray-900">${
                   it.name || "وجبة"
                 }</span>
-                <span class="font-extrabold text-brand-black">× ${
+                <span class="font-extrabold text-base text-brand-black whitespace-nowrap">× ${
                   it.quantity || 0
                 }</span>
               </div>
-              <div class="flex justify-between text-[11px] text-gray-500">
-                <span>${
+              <div class="flex justify-between items-center gap-2 text-xs">
+                <span class="font-extrabold text-brand-black">${
                   it.optionLabel ? `الحجم: ${it.optionLabel}` : "وان سايز"
                 }</span>
-                <span>${
+                <span class="font-extrabold text-sm text-brand-black whitespace-nowrap">${
                   (Number(it.price) || 0) * (Number(it.quantity) || 0)
                 } ج.م</span>
               </div>
@@ -4196,7 +4415,7 @@
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-2 mb-1">
                     <span class="font-extrabold text-sm text-brand-black">${
-                      ord.customerPhone || "-"
+                      ord.customerName || "-"
                     }</span>
                     <span class="text-[10px] text-gray-400">•</span>
                     <span class="text-[11px] font-bold text-gray-500 truncate">${
