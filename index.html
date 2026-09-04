@@ -2058,7 +2058,7 @@
       // مؤقت انتظار ظهور المطاعم.
       // يبدأ عند فتح التطبيق، ويختفي فور وصول مطعم واحد على الأقل.
       // عند وصوله إلى صفر يصبح زر إعادة التحميل متاحاً للمستخدم.
-      let restaurantsLoadingCountdown = 30;
+      let restaurantsLoadingCountdown = 15;
       let restaurantsLoadingCountdownInterval = null;
 
       function updateRestaurantsLoadingRecoveryUI() {
@@ -2091,7 +2091,7 @@
       function startRestaurantsLoadingRecoveryTimer() {
         stopRestaurantsLoadingRecoveryTimer();
 
-        restaurantsLoadingCountdown = 30;
+        restaurantsLoadingCountdown = 15;
         updateRestaurantsLoadingRecoveryUI();
 
         restaurantsLoadingCountdownInterval = setInterval(() => {
@@ -2262,7 +2262,7 @@
 
         if (window.restaurantsData.length === 0) {
           // طالما لم تظهر أي مطاعم، نستمر في عرض شاشة التحميل + المؤقت.
-          // هذا يسمح للعميل باستخدام إعادة التحميل اليدوية بعد 30 ثانية.
+          // هذا يسمح للعميل باستخدام إعادة التحميل اليدوية بعد 15 ثانية.
           container.innerHTML = `
             <div
               id="restaurants-loading-recovery"
