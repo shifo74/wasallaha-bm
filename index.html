@@ -203,7 +203,9 @@
             <div
               class="text-center py-6 text-gray-400 text-xs bg-white rounded-2xl p-4"
             >
-              جاري تحميل المطاعم...
+              وصّلها BM بتجهزلك الدنيا 😉<br>
+<span class="italic">استنى لحظات واستمتع بأحلى اختيارات المطاعم ❤️</span><br>
+<span class="text-[11px] mt-2 inline-block">لو في أي مشكلة تواصل مع الدعم الفني</span>
             </div>
           </div>
 
@@ -1980,60 +1982,102 @@
       window.searchQuery = "";
       window.restaurantMenuSearchQuery = "";
 
-      window.initApp = function () {
-        onSnapshot(window.colRef, (snapshot) => {
-          window.restaurantsData = [];
-          let restaurantSnapshotIndex = 0;
-          snapshot.forEach((docSnap) => {
-            window.restaurantsData.push({
-              id: docSnap.id,
-              ...docSnap.data(),
-              __restaurantSnapshotIndex: restaurantSnapshotIndex++,
+      // إعادة محاولة تحميل المطاعم تلقائياً إذا فشل أول اتصال بـ Firestore.
+      // لا يتم عمل Reload للصفحة ولا يتأثر Auto Reload أو باقي البيانات.
+      window.restaurantsInitialSnapshotReceived = false;
+      let restaurantRetryTimer = null;
+      let restaurantRetryDelay = 1000;
+
+      function subscribeRestaurantsListener() {
+        if (restaurantRetryTimer) {
+          clearTimeout(restaurantRetryTimer);
+          restaurantRetryTimer = null;
+        }
+
+        onSnapshot(
+          window.colRef,
+          { includeMetadataChanges: true },
+          (snapshot) => {
+            // لا نعتبر الـ snapshot القادم من الكاش تحميلًا نهائيًا؛
+            // لأن الكاش قد يكون فارغًا لحظيًا بينما بيانات السيرفر موجودة.
+            const isFromCache = snapshot.metadata?.fromCache === true;
+
+            if (!isFromCache) {
+              window.restaurantsInitialSnapshotReceived = true;
+              restaurantRetryDelay = 1000;
+            }
+
+            window.restaurantsData = [];
+            let restaurantSnapshotIndex = 0;
+            snapshot.forEach((docSnap) => {
+              window.restaurantsData.push({
+                id: docSnap.id,
+                ...docSnap.data(),
+                __restaurantSnapshotIndex: restaurantSnapshotIndex++,
+              });
             });
-          });
-          renderRestaurantsList();
-          populateMerchantDropdown();
+            renderRestaurantsList();
+            populateMerchantDropdown();
 
-          // تحديث قائمة الوجبات داخل لوحة التحكم أيضاً عند أي تغيير يصل من Firebase
-          if (window.currentMerchantRestaurantId) {
-            const currentMerchantRest = window.restaurantsData.find(
-              (r) => r.id === window.currentMerchantRestaurantId
-            );
-            if (currentMerchantRest) {
-              const merchantSelect = document.getElementById(
-                "restaurant-select-dropdown"
+            // تحديث قائمة الوجبات داخل لوحة التحكم أيضاً عند أي تغيير يصل من Firebase
+            if (window.currentMerchantRestaurantId) {
+              const currentMerchantRest = window.restaurantsData.find(
+                (r) => r.id === window.currentMerchantRestaurantId
               );
-              if (merchantSelect) {
-                merchantSelect.value = window.currentMerchantRestaurantId;
+              if (currentMerchantRest) {
+                const merchantSelect = document.getElementById(
+                  "restaurant-select-dropdown"
+                );
+                if (merchantSelect) {
+                  merchantSelect.value = window.currentMerchantRestaurantId;
+                }
+
+                const editName = document.getElementById("edit-restaurant-name");
+                const editImage = document.getElementById(
+                  "edit-restaurant-image"
+                );
+                const editDisplayOrder = document.getElementById(
+                  "edit-restaurant-display-order"
+                );
+                if (editName) editName.value = currentMerchantRest.name || "";
+                if (editImage) editImage.value = currentMerchantRest.image || "";
+                if (editDisplayOrder) {
+                  editDisplayOrder.value =
+                    currentMerchantRest.displayOrder != null
+                      ? currentMerchantRest.displayOrder
+                      : "";
+                }
+
+                updateRestaurantOpenStatusButtons(
+                  currentMerchantRest.isClosed === true
+                );
+                renderMerchantCurrentMenuList(currentMerchantRest);
               }
+            }
 
-              const editName = document.getElementById("edit-restaurant-name");
-              const editImage = document.getElementById(
-                "edit-restaurant-image"
-              );
-              const editDisplayOrder = document.getElementById(
-                "edit-restaurant-display-order"
-              );
-              if (editName) editName.value = currentMerchantRest.name || "";
-              if (editImage) editImage.value = currentMerchantRest.image || "";
-              if (editDisplayOrder) {
-                editDisplayOrder.value =
-                  currentMerchantRest.displayOrder != null
-                    ? currentMerchantRest.displayOrder
-                    : "";
-              }
+            if (window.currentRestaurantId) {
+              renderMenuForRestaurant(window.currentRestaurantId);
+            }
+          },
+          (error) => {
+            console.error("[Firebase Restaurants] listener error:", error);
 
-              updateRestaurantOpenStatusButtons(
-                currentMerchantRest.isClosed === true
-              );
-              renderMerchantCurrentMenuList(currentMerchantRest);
+            // إذا فشل الاتصال، أعد إنشاء الـ listener بعد تأخير قصير.
+            // التأخير يزيد تدريجياً حتى لا نضغط على Firestore أو الشبكة.
+            if (!window.restaurantsInitialSnapshotReceived) {
+              const delay = restaurantRetryDelay;
+              restaurantRetryDelay = Math.min(15000, restaurantRetryDelay * 2);
+              restaurantRetryTimer = setTimeout(() => {
+                restaurantRetryTimer = null;
+                subscribeRestaurantsListener();
+              }, delay);
             }
           }
+        );
+      }
 
-          if (window.currentRestaurantId) {
-            renderMenuForRestaurant(window.currentRestaurantId);
-          }
-        });
+      window.initApp = function () {
+        subscribeRestaurantsListener();
 
         onSnapshot(window.ordersRef, (snapshot) => {
           window.allOrders = [];
@@ -2070,6 +2114,12 @@
         if (!container) return;
 
         if (window.restaurantsData.length === 0) {
+          // لا تعرض رسالة "لا توجد مطاعم" قبل وصول أول Snapshot فعلي من Firebase.
+          if (!window.restaurantsInitialSnapshotReceived) {
+            container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs bg-white rounded-2xl p-4">جاري تحميل المطاعم...</div>`;
+            return;
+          }
+
           container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs bg-white rounded-2xl p-4">لا توجد مطاعم متاحة حالياً.</div>`;
           return;
         }
