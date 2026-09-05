@@ -226,11 +226,19 @@
 
           <div id="categories-home-section" class="space-y-3">
             <div class="flex items-center justify-between gap-2">
-              <div>
+              <div class="min-w-0">
                 <h2 class="font-extrabold text-lg text-brand-black">اختار القسم</h2>
                 <p class="text-[11px] text-gray-500">اختار نوع الأكل أو المكان اللي عايز تطلب منه</p>
               </div>
-              <span class="text-brand-yellow text-2xl">🍽️</span>
+              <button
+                type="button"
+                onclick="reloadHomeSections()"
+                class="shrink-0 inline-flex items-center gap-1.5 bg-brand-black text-brand-yellow font-extrabold text-[11px] px-3 py-2 rounded-xl shadow-sm active:scale-95 transition"
+                aria-label="إعادة تحميل الأقسام"
+              >
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                إعادة تحميل
+              </button>
             </div>
             <div id="categories-list-container" class="grid grid-cols-2 gap-3"></div>
           </div>
@@ -2150,6 +2158,20 @@
         if (window.lucide) lucide.createIcons();
       };
 
+      // إعادة تحميل بيانات الواجهة الرئيسية (الأقسام والمطاعم)
+      // بدون إعادة تحميل الصفحة نفسها وبدون لمس Auto Reload أو localStorage.
+      window.reloadHomeSections = function () {
+        window.selectedCategoryId = null;
+        window.searchQuery = "";
+
+        const searchInput = document.getElementById("search-input");
+        if (searchInput) searchInput.value = "";
+
+        window.retryFirebaseData();
+
+        if (window.lucide) lucide.createIcons();
+      };
+
       window.retryFirebaseData = function () {
         window.restaurantsLoading = true;
         window.categoriesLoading = true;
@@ -2421,10 +2443,28 @@
         } else if (banner) {
           banner.classList.add("hidden");
         }
-        if (window.restaurantsLoading || window.categoriesLoading) {
+
+        // الأقسام مستقلة عن تحميل المطاعم:
+        // بمجرد وصول الأقسام من Firebase نعرضها فوراً، حتى لو المطاعم ما زالت تتحمل.
+        if (!window.categoriesLoading && !window.searchQuery && !window.selectedCategoryId) {
+          window.renderCategoriesHome();
+          return;
+        }
+
+        // لو المستخدم داخل قسم، لازم المطاعم تكون جاهزة قبل عرض مطاعم القسم.
+        if (window.searchQuery || window.selectedCategoryId) {
+          if (window.restaurantsLoading || window.categoriesLoading) {
+            window.renderHomeLoadingState();
+            return;
+          }
+        }
+
+        // عند بداية التحميل، ننتظر الأقسام فقط وليس المطاعم.
+        if (window.categoriesLoading) {
           window.renderHomeLoadingState();
           return;
         }
+
         const query = window.searchQuery || "";
         if (query) {
           const filtered = sortRestaurantsForDisplay(window.restaurantsData.filter((rest) => {
