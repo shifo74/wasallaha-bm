@@ -69,45 +69,6 @@
         width: 100% !important;
         min-height: 42px;
       }
-
-      /* شاشة انتظار تحميل المطاعم + مؤقت إعادة التحميل اليدوي */
-      .restaurants-loading-recovery {
-        animation: restaurantsLoadingFadeIn 0.25s ease-out;
-      }
-
-      @keyframes restaurantsLoadingFadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(4px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .restaurants-loading-spinner {
-        width: 34px;
-        height: 34px;
-        border: 4px solid #e5e7eb;
-        border-top-color: #ffb800;
-        border-radius: 50%;
-        animation: restaurantsLoadingSpin 0.8s linear infinite;
-        margin: 0 auto;
-      }
-
-      @keyframes restaurantsLoadingSpin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-
-      .restaurants-loading-timer {
-        font-size: 3.25rem;
-        line-height: 1;
-        font-weight: 800;
-        letter-spacing: -0.04em;
-      }
     </style>
     <script>
       tailwind.config = {
@@ -237,44 +198,60 @@
             </div>
           </div>
 
-          <h2 class="font-bold text-lg text-brand-black">مطاعم بني مزار</h2>
-          <div id="restaurants-list-container" class="space-y-3">
-            <div
-              id="restaurants-loading-recovery"
-              class="restaurants-loading-recovery text-center py-7 text-gray-400 text-xs bg-white rounded-2xl p-5 border border-gray-100 shadow-sm"
-            >
-              <div class="restaurants-loading-spinner mb-4"></div>
-              <div class="font-extrabold text-sm text-brand-black">
-                جاري تحميل المطاعم...
-              </div>
-              <div class="text-[11px] mt-1 text-gray-400">
-                وصّلها BM بتجهزلك الدنيا 😉
-              </div>
-
-              <button
-                id="restaurants-refresh-btn"
-                type="button"
-                onclick="refreshRestaurantsAfterLoadingTimeout()"
-                disabled
-                class="mt-5 w-full bg-brand-black text-brand-yellow font-extrabold py-3 px-4 rounded-2xl text-sm shadow-md opacity-50 cursor-not-allowed transition"
-              >
-                اضغط هنا في حال عدم ظهور المطاعم
-              </button>
-
-              <div class="mt-4 text-gray-400 text-[11px] font-semibold">
-                يمكنك إعادة التحميل إذا لم تظهر المطاعم بعد انتهاء المؤقت
-              </div>
-              <div
-                id="restaurants-loading-timer"
-                class="restaurants-loading-timer mt-2 text-brand-black"
-              >
-                30
-              </div>
-              <div class="text-[10px] text-gray-400 mt-1">
-                ثانية
+          <div
+            id="firebase-error-banner"
+            class="hidden bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 text-xs space-y-3"
+          >
+            <div class="flex items-start gap-2">
+              <i data-lucide="wifi-off" class="w-5 h-5 shrink-0"></i>
+              <div>
+                <p class="font-extrabold">تعذر تحميل البيانات حالياً</p>
+                <p id="firebase-error-message" class="text-[11px] mt-1 leading-relaxed">حدث خطأ أثناء الاتصال بالخدمة.</p>
               </div>
             </div>
+            <button
+              type="button"
+              onclick="retryFirebaseData()"
+              class="w-full bg-brand-black text-brand-yellow font-extrabold py-2.5 rounded-xl"
+            >
+              إعادة المحاولة
+            </button>
           </div>
+
+          <div id="home-loading-state" class="hidden text-center py-8 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div class="w-10 h-10 mx-auto rounded-full border-4 border-gray-200 border-t-brand-yellow animate-spin"></div>
+            <p class="font-extrabold text-sm text-brand-black mt-3">بنجهزلك الأقسام والمطاعم...</p>
+            <p class="text-[11px] text-gray-400 mt-1">استنى لحظات ❤️</p>
+          </div>
+
+          <div id="categories-home-section" class="space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <h2 class="font-extrabold text-lg text-brand-black">اختار القسم</h2>
+                <p class="text-[11px] text-gray-500">اختار نوع الأكل أو المكان اللي عايز تطلب منه</p>
+              </div>
+              <span class="text-brand-yellow text-2xl">🍽️</span>
+            </div>
+            <div id="categories-list-container" class="grid grid-cols-2 gap-3"></div>
+          </div>
+
+          <div id="category-restaurants-section" class="hidden space-y-3">
+            <button
+              type="button"
+              onclick="backToCategories()"
+              class="inline-flex items-center gap-2 text-xs font-extrabold text-brand-black bg-white border border-gray-200 px-3 py-2 rounded-xl shadow-sm"
+            >
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              الأقسام
+            </button>
+            <div class="flex items-center justify-between gap-2">
+              <h2 id="selected-category-title" class="font-extrabold text-lg text-brand-black"></h2>
+              <span class="text-[11px] text-gray-400">المطاعم داخل القسم</span>
+            </div>
+          </div>
+
+          <h2 id="restaurants-results-title" class="hidden font-bold text-lg text-brand-black">نتائج البحث</h2>
+          <div id="restaurants-list-container" class="space-y-3"></div>
 
           <!-- سجل الطلبات للعميل -->
           <div
@@ -983,7 +960,7 @@
       </div>
 
       <!-- تبويبات لوحة التحكم -->
-      <div class="flex gap-2">
+      <div class="flex gap-2 flex-wrap">
         <button
           onclick="switchMerchantTab('orders')"
           id="tab-orders-btn"
@@ -994,9 +971,16 @@
         <button
           onclick="switchMerchantTab('menu')"
           id="tab-menu-btn"
-          class="flex-1 py-2 rounded-xl text-xs font-bold bg-gray-200 text-gray-700"
+          class="flex-1 py-2 rounded-xl text-xs font-bold bg-gray-200 text-gray-700 min-w-[31%]"
         >
           إدارة المنيو والأكلات
+        </button>
+        <button
+          onclick="switchMerchantTab('categories')"
+          id="tab-categories-btn"
+          class="flex-1 py-2 rounded-xl text-xs font-bold bg-gray-200 text-gray-700 min-w-[31%]"
+        >
+          إدارة الأقسام
         </button>
       </div>
 
@@ -1324,6 +1308,46 @@
               </p>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- قسم إدارة الأقسام -->
+      <div id="merchant-categories-section" class="hidden space-y-4">
+        <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+          <div>
+            <h3 class="font-extrabold text-sm text-brand-black">إدارة أقسام التطبيق</h3>
+            <p class="text-[11px] text-gray-500 mt-1">أنشئ قسم، حدد المطاعم الموجودة بداخله، أضف صورة ورتّب الأقسام كما تحب.</p>
+          </div>
+
+          <div class="space-y-2 text-xs">
+            <input type="text" id="new-category-name" placeholder="اسم القسم (مثال: برجر ووجبات سريعة)" class="w-full border rounded-xl p-2.5" />
+            <input type="url" id="new-category-image" placeholder="رابط صورة القسم (اختياري)" class="w-full border rounded-xl p-2.5" />
+            <input type="number" id="new-category-display-order" min="1" step="1" placeholder="ترتيب القسم (اختياري)" class="w-full border rounded-xl p-2.5" />
+            <div>
+              <label class="font-bold text-gray-600 block mb-1 text-[11px]">أو اختر صورة من الجهاز:</label>
+              <input type="file" id="new-category-file" accept="image/*" class="w-full border rounded-xl p-2 text-[10px] bg-gray-50 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-yellow file:text-brand-black" />
+            </div>
+          </div>
+
+          <div>
+            <p class="font-extrabold text-xs text-brand-black mb-2">المطاعم التي ستظهر داخل القسم:</p>
+            <div id="new-category-restaurants-list" class="space-y-2 max-h-64 overflow-y-auto border rounded-xl p-3 bg-gray-50">
+              <p class="text-gray-400 text-center py-2">لا توجد مطاعم محملة بعد.</p>
+            </div>
+          </div>
+
+          <button type="button" onclick="createCategory()" class="w-full bg-brand-yellow text-brand-black font-extrabold py-2.5 rounded-xl shadow">حفظ وإضافة القسم</button>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h3 class="font-extrabold text-sm text-brand-black">الأقسام الحالية</h3>
+              <p class="text-[10px] text-gray-500 mt-1">تقدر تعدل الاسم والصورة والترتيب والمطاعم أو تحذف القسم.</p>
+            </div>
+            <span class="text-brand-yellow text-xl">▦</span>
+          </div>
+          <div id="merchant-categories-list" class="space-y-3"></div>
         </div>
       </div>
 
@@ -1849,6 +1873,34 @@
       </div>
     </div>
 
+    <!-- Merchant dashboard trigger fallback: defined before Firebase module -->
+    <script>
+      window.handleMerchantAuthTrigger = function () {
+        try {
+          if (sessionStorage.getItem("merchant_logged_in") === "true") {
+            const customerMode = document.getElementById("customer-mode");
+            const merchantMode = document.getElementById("merchant-mode");
+            const toggleBtn = document.getElementById("toggle-mode-btn");
+
+            if (customerMode) customerMode.classList.add("hidden");
+            if (merchantMode) merchantMode.classList.remove("hidden");
+            if (toggleBtn) toggleBtn.classList.add("hidden");
+
+            if (typeof window.switchMerchantTab === "function") {
+              window.switchMerchantTab("orders");
+            }
+          } else {
+            const loginModal = document.getElementById("login-modal");
+            if (loginModal) loginModal.classList.remove("hidden");
+          }
+        } catch (error) {
+          console.error("Merchant dashboard trigger error:", error);
+          const loginModal = document.getElementById("login-modal");
+          if (loginModal) loginModal.classList.remove("hidden");
+        }
+      };
+    </script>
+
     <!-- Firebase Logic -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -1877,14 +1929,22 @@
         measurementId: "G-LFM7N1YN5D",
       };
 
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
+      let app;
+      let db;
+      try {
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+      } catch (firebaseInitError) {
+        console.error("Firebase initialization failed:", firebaseInitError);
+        window.__firebaseInitializationError = firebaseInitError;
+      }
 
       window.db = db;
-      window.colRef = collection(db, "restaurants");
-      window.ordersRef = collection(db, "orders");
-      window.reviewsRef = collection(db, "reviews");
-      window.settingsDocRef = doc(db, "settings", "app_status");
+      window.colRef = db ? collection(db, "restaurants") : null;
+      window.ordersRef = db ? collection(db, "orders") : null;
+      window.reviewsRef = db ? collection(db, "reviews") : null;
+      window.categoriesRef = null; // الأقسام تُحفظ داخل settings/app_status لتجنب صلاحيات Collection جديدة
+      window.settingsDocRef = db ? doc(db, "settings", "app_status") : null;
 
       // Global App Status listener
       onSnapshot(window.settingsDocRef, (docSnap) => {
@@ -1895,7 +1955,21 @@
         const btnOpen = document.getElementById("btn-open-app");
         const btnClose = document.getElementById("btn-close-app");
 
-        let isClosed = docSnap.exists() && docSnap.data().isClosed === true;
+        const statusData = docSnap.exists() ? (docSnap.data() || {}) : {};
+        let isClosed = statusData.isClosed === true;
+
+        // تحميل الأقسام من نفس مستند إعدادات التطبيق الموجود بالفعل.
+        // هذا يتجنب الاعتماد على Collection جديدة باسم categories قد تكون Rules الخاصة بها غير مفعلة.
+        const storedCategories = Array.isArray(statusData.categories) ? statusData.categories : [];
+        window.categoriesData = storedCategories.map((category, index) => ({
+          ...category,
+          id: String(category.id || `category_${index}_${Date.now()}`),
+          __categorySnapshotIndex: index,
+        }));
+        window.categoriesLoading = false;
+        window.categoriesLoadError = null;
+        if (typeof renderRestaurantsList === "function") renderRestaurantsList();
+        if (typeof renderMerchantCategories === "function") renderMerchantCategories();
 
         if (isClosed) {
           closedScreen.classList.remove("hidden");
@@ -1939,7 +2013,12 @@
               "flex-1 bg-gray-200 text-gray-700 font-bold py-2 rounded-xl text-xs";
           }
         }
-      });
+        }, (error) => {
+          console.error("Firebase app status listener error:", error);
+          if (typeof window.setFirebaseMainError === "function") {
+            window.setFirebaseMainError(getFirebaseErrorMessage(error));
+          }
+        });
 
       window.openGlobalCloseSettingsModal = function () {
         const modal = document.getElementById("global-close-settings-modal");
@@ -2009,6 +2088,12 @@
       };
 
       window.restaurantsData = [];
+      window.categoriesData = [];
+      window.restaurantsLoading = true;
+      window.categoriesLoading = true;
+      window.restaurantsLoadError = null;
+      window.categoriesLoadError = null;
+      window.selectedCategoryId = null;
       window.currentRestaurantId = null;
       window.currentMerchantRestaurantId = null;
       window.merchantReviewsVisible = false;
@@ -2049,104 +2134,61 @@
       window.searchQuery = "";
       window.restaurantMenuSearchQuery = "";
 
-      // إعادة محاولة تحميل المطاعم تلقائياً إذا فشل أول اتصال بـ Firestore.
-      // لا يتم عمل Reload للصفحة ولا يتأثر Auto Reload أو باقي البيانات.
-      window.restaurantsInitialSnapshotReceived = false;
-      let restaurantRetryTimer = null;
-      let restaurantRetryDelay = 1000;
-
-      // مؤقت انتظار ظهور المطاعم.
-      // يبدأ عند فتح التطبيق، ويختفي فور وصول مطعم واحد على الأقل.
-      // عند وصوله إلى صفر يصبح زر إعادة التحميل متاحاً للمستخدم.
-      let restaurantsLoadingCountdown = 15;
-      let restaurantsLoadingCountdownInterval = null;
-
-      function updateRestaurantsLoadingRecoveryUI() {
-        const timerEl = document.getElementById("restaurants-loading-timer");
-        const refreshBtn = document.getElementById("restaurants-refresh-btn");
-
-        if (timerEl) {
-          timerEl.textContent = Math.max(0, restaurantsLoadingCountdown);
-        }
-
-        if (refreshBtn) {
-          const ready = restaurantsLoadingCountdown <= 0;
-          refreshBtn.disabled = !ready;
-
-          refreshBtn.classList.toggle("opacity-50", !ready);
-          refreshBtn.classList.toggle("cursor-not-allowed", !ready);
-          refreshBtn.classList.toggle("cursor-pointer", ready);
-          refreshBtn.classList.toggle("shadow-md", !ready);
-          refreshBtn.classList.toggle("shadow-lg", ready);
-        }
+      function getFirebaseErrorMessage(error) {
+        const code = error?.code || "";
+        if (code === "permission-denied") return "لا توجد صلاحية للوصول إلى بيانات Firebase.";
+        if (code === "unavailable" || code === "failed-precondition") return "خدمة Firebase غير متاحة مؤقتاً أو الاتصال غير مستقر.";
+        if (code === "unauthenticated") return "تعذر التحقق من صلاحية الاتصال بالخدمة.";
+        return "حدث خطأ أثناء الاتصال بـ Firebase. حاول مرة أخرى.";
       }
 
-      function stopRestaurantsLoadingRecoveryTimer() {
-        if (restaurantsLoadingCountdownInterval) {
-          clearInterval(restaurantsLoadingCountdownInterval);
-          restaurantsLoadingCountdownInterval = null;
-        }
-      }
-
-      function startRestaurantsLoadingRecoveryTimer() {
-        stopRestaurantsLoadingRecoveryTimer();
-
-        restaurantsLoadingCountdown = 15;
-        updateRestaurantsLoadingRecoveryUI();
-
-        restaurantsLoadingCountdownInterval = setInterval(() => {
-          restaurantsLoadingCountdown -= 1;
-
-          if (restaurantsLoadingCountdown <= 0) {
-            restaurantsLoadingCountdown = 0;
-            stopRestaurantsLoadingRecoveryTimer();
-          }
-
-          updateRestaurantsLoadingRecoveryUI();
-        }, 1000);
-      }
-
-      function stopRestaurantsLoadingRecovery() {
-        stopRestaurantsLoadingRecoveryTimer();
-
-        const loadingEl = document.getElementById(
-          "restaurants-loading-recovery"
-        );
-        if (loadingEl) {
-          loadingEl.remove();
-        }
-      }
-
-      window.refreshRestaurantsAfterLoadingTimeout = function () {
-        if (restaurantsLoadingCountdown > 0) return;
-
-        stopRestaurantsLoadingRecoveryTimer();
-
-        // Reload عادي فقط، بدون مسح localStorage أو بيانات العميل.
-        // الـAuto Reload الموجود أعلى الملف لن يدخل في Loop لأن sessionStorage
-        // يحتفظ بعلامة الـReload السابقة أثناء جلسة التطبيق.
-        window.location.reload();
+      window.setFirebaseMainError = function (message) {
+        const banner = document.getElementById("firebase-error-banner");
+        const msg = document.getElementById("firebase-error-message");
+        if (banner) banner.classList.remove("hidden");
+        if (msg) msg.textContent = message || "حدث خطأ أثناء الاتصال بالخدمة.";
+        if (window.lucide) lucide.createIcons();
       };
 
-      function subscribeRestaurantsListener() {
-        if (restaurantRetryTimer) {
-          clearTimeout(restaurantRetryTimer);
-          restaurantRetryTimer = null;
+      window.retryFirebaseData = function () {
+        window.restaurantsLoading = true;
+        window.categoriesLoading = true;
+        window.restaurantsLoadError = null;
+        window.categoriesLoadError = null;
+        const banner = document.getElementById("firebase-error-banner");
+        if (banner) banner.classList.add("hidden");
+        renderRestaurantsList();
+        if (typeof window.stopFirebaseRealtimeListeners === "function") {
+          window.stopFirebaseRealtimeListeners();
         }
+        window.startFirebaseRealtimeListeners();
+      };
 
-        onSnapshot(
+      window.stopFirebaseRealtimeListeners = function () {
+        [window.unsubscribeRestaurants, window.unsubscribeCategories, window.unsubscribeOrders].forEach((unsubscribe) => {
+          if (typeof unsubscribe === "function") {
+            try { unsubscribe(); } catch (e) { console.warn(e); }
+          }
+        });
+        window.unsubscribeRestaurants = null;
+        window.unsubscribeCategories = null;
+        window.unsubscribeOrders = null;
+      };
+
+      window.startFirebaseRealtimeListeners = function () {
+        if (!db || !window.colRef || !window.settingsDocRef) {
+          const error = window.__firebaseInitializationError || new Error("Firebase is unavailable");
+          window.restaurantsLoading = false;
+          window.categoriesLoading = false;
+          window.restaurantsLoadError = error;
+          window.categoriesLoadError = error;
+          renderRestaurantsList();
+          window.setFirebaseMainError(getFirebaseErrorMessage(error));
+          return;
+        }
+        window.unsubscribeRestaurants = onSnapshot(
           window.colRef,
-          { includeMetadataChanges: true },
           (snapshot) => {
-            // لا نعتبر الـ snapshot القادم من الكاش تحميلًا نهائيًا؛
-            // لأن الكاش قد يكون فارغًا لحظيًا بينما بيانات السيرفر موجودة.
-            const isFromCache = snapshot.metadata?.fromCache === true;
-
-            if (!isFromCache) {
-              window.restaurantsInitialSnapshotReceived = true;
-              restaurantRetryDelay = 1000;
-            }
-
             window.restaurantsData = [];
             let restaurantSnapshotIndex = 0;
             snapshot.forEach((docSnap) => {
@@ -2156,96 +2198,82 @@
                 __restaurantSnapshotIndex: restaurantSnapshotIndex++,
               });
             });
-
-            // بمجرد وصول مطعم واحد على الأقل، نخفي شاشة الانتظار والمؤقت.
-            if (window.restaurantsData.length > 0) {
-              stopRestaurantsLoadingRecovery();
-            }
-
+            window.restaurantsLoading = false;
+            window.restaurantsLoadError = null;
             renderRestaurantsList();
             populateMerchantDropdown();
+            renderNewCategoryRestaurantChoices();
+            renderMerchantCategories();
 
-            // تحديث قائمة الوجبات داخل لوحة التحكم أيضاً عند أي تغيير يصل من Firebase
             if (window.currentMerchantRestaurantId) {
               const currentMerchantRest = window.restaurantsData.find(
                 (r) => r.id === window.currentMerchantRestaurantId
               );
               if (currentMerchantRest) {
-                const merchantSelect = document.getElementById(
-                  "restaurant-select-dropdown"
-                );
-                if (merchantSelect) {
-                  merchantSelect.value = window.currentMerchantRestaurantId;
-                }
-
+                const merchantSelect = document.getElementById("restaurant-select-dropdown");
+                if (merchantSelect) merchantSelect.value = window.currentMerchantRestaurantId;
                 const editName = document.getElementById("edit-restaurant-name");
-                const editImage = document.getElementById(
-                  "edit-restaurant-image"
-                );
-                const editDisplayOrder = document.getElementById(
-                  "edit-restaurant-display-order"
-                );
+                const editImage = document.getElementById("edit-restaurant-image");
+                const editDisplayOrder = document.getElementById("edit-restaurant-display-order");
                 if (editName) editName.value = currentMerchantRest.name || "";
                 if (editImage) editImage.value = currentMerchantRest.image || "";
-                if (editDisplayOrder) {
-                  editDisplayOrder.value =
-                    currentMerchantRest.displayOrder != null
-                      ? currentMerchantRest.displayOrder
-                      : "";
-                }
-
-                updateRestaurantOpenStatusButtons(
-                  currentMerchantRest.isClosed === true
-                );
+                if (editDisplayOrder) editDisplayOrder.value = currentMerchantRest.displayOrder != null ? currentMerchantRest.displayOrder : "";
+                updateRestaurantOpenStatusButtons(currentMerchantRest.isClosed === true);
                 renderMerchantCurrentMenuList(currentMerchantRest);
               }
             }
-
-            if (window.currentRestaurantId) {
-              renderMenuForRestaurant(window.currentRestaurantId);
-            }
+            if (window.currentRestaurantId) renderMenuForRestaurant(window.currentRestaurantId);
           },
           (error) => {
-            console.error("[Firebase Restaurants] listener error:", error);
+            console.error("Firebase restaurants listener error:", error);
+            window.restaurantsLoading = false;
+            window.restaurantsLoadError = error;
+            renderRestaurantsList();
+            window.setFirebaseMainError(getFirebaseErrorMessage(error));
+          }
+        );
 
-            // إذا فشل الاتصال، أعد إنشاء الـ listener بعد تأخير قصير.
-            // التأخير يزيد تدريجياً حتى لا نضغط على Firestore أو الشبكة.
-            if (!window.restaurantsInitialSnapshotReceived) {
-              const delay = restaurantRetryDelay;
-              restaurantRetryDelay = Math.min(15000, restaurantRetryDelay * 2);
-              restaurantRetryTimer = setTimeout(() => {
-                restaurantRetryTimer = null;
-                subscribeRestaurantsListener();
-              }, delay);
+        // الأقسام تُقرأ من settings/app_status مع بيانات حالة التطبيق، لذلك لا نحتاج Listener منفصل على categories.
+        window.unsubscribeCategories = null;
+
+        window.unsubscribeOrders = onSnapshot(
+          window.ordersRef,
+          (snapshot) => {
+            window.allOrders = [];
+            snapshot.forEach((docSnap) => {
+              window.allOrders.push({ id: docSnap.id, ...docSnap.data() });
+            });
+            window.allOrders.sort((a, b) => {
+              const aTime = a.createdAt?.seconds ? a.createdAt.seconds * 1000 + (a.createdAt.nanoseconds || 0) / 1000000 : 0;
+              const bTime = b.createdAt?.seconds ? b.createdAt.seconds * 1000 + (b.createdAt.nanoseconds || 0) / 1000000 : 0;
+              return bTime - aTime;
+            });
+            renderMerchantOrders();
+            renderCustomerOrdersHistory();
+          },
+          (error) => {
+            console.error("Firebase orders listener error:", error);
+            // الطلبات ليست جزءاً من واجهة العميل الرئيسية، لذلك لا نخفي التطبيق كله عند فشلها.
+            const container = document.getElementById("merchant-orders-container");
+            if (container && sessionStorage.getItem("merchant_logged_in") === "true") {
+              container.innerHTML = `<div class="text-center py-8 text-red-500 text-xs bg-red-50 rounded-2xl p-4">تعذر تحميل الطلبات. ${getFirebaseErrorMessage(error)}</div>`;
             }
           }
         );
-      }
+      };
 
       window.initApp = function () {
-        startRestaurantsLoadingRecoveryTimer();
-        subscribeRestaurantsListener();
-
-        onSnapshot(window.ordersRef, (snapshot) => {
-          window.allOrders = [];
-          snapshot.forEach((docSnap) => {
-            window.allOrders.push({ id: docSnap.id, ...docSnap.data() });
-          });
-          window.allOrders.sort((a, b) => {
-            const aTime = a.createdAt?.seconds
-              ? a.createdAt.seconds * 1000 +
-                (a.createdAt.nanoseconds || 0) / 1000000
-              : 0;
-            const bTime = b.createdAt?.seconds
-              ? b.createdAt.seconds * 1000 +
-                (b.createdAt.nanoseconds || 0) / 1000000
-              : 0;
-            return bTime - aTime;
-          });
-          renderMerchantOrders();
-          renderCustomerOrdersHistory();
-        });
-
+        try {
+          window.startFirebaseRealtimeListeners();
+        } catch (error) {
+          console.error("Firebase realtime startup error:", error);
+          window.restaurantsLoading = false;
+          window.categoriesLoading = false;
+          window.restaurantsLoadError = error;
+          window.categoriesLoadError = error;
+          renderRestaurantsList();
+          window.setFirebaseMainError(getFirebaseErrorMessage(error));
+        }
         loadCustomerHistoryFromStorage();
         checkMerchantSession();
       };
@@ -2253,132 +2281,174 @@
       window.handleSearchInput = function () {
         const input = document.getElementById("search-input");
         window.searchQuery = input ? input.value.trim().toLowerCase() : "";
+        if (window.searchQuery) window.selectedCategoryId = null;
         renderRestaurantsList();
       };
 
-      window.renderRestaurantsList = function () {
+      window.sortCategoriesForDisplay = function (categories) {
+        return [...categories].sort((a, b) => {
+          const aHas = Number.isInteger(Number(a.displayOrder)) && Number(a.displayOrder) >= 1;
+          const bHas = Number.isInteger(Number(b.displayOrder)) && Number(b.displayOrder) >= 1;
+          if (aHas && bHas && Number(a.displayOrder) !== Number(b.displayOrder)) return Number(a.displayOrder) - Number(b.displayOrder);
+          if (aHas !== bHas) return aHas ? -1 : 1;
+          const aCreated = Number(a.createdAt) || Number.MAX_SAFE_INTEGER;
+          const bCreated = Number(b.createdAt) || Number.MAX_SAFE_INTEGER;
+          if (aCreated !== bCreated) return aCreated - bCreated;
+          return String(a.id).localeCompare(String(b.id));
+        });
+      };
+
+      window.renderHomeLoadingState = function () {
+        const loading = document.getElementById("home-loading-state");
+        const cats = document.getElementById("categories-home-section");
+        const catRestaurants = document.getElementById("category-restaurants-section");
+        const resultsTitle = document.getElementById("restaurants-results-title");
         const container = document.getElementById("restaurants-list-container");
-        if (!container) return;
+        if (loading) loading.classList.remove("hidden");
+        if (cats) cats.classList.add("hidden");
+        if (catRestaurants) catRestaurants.classList.add("hidden");
+        if (resultsTitle) resultsTitle.classList.add("hidden");
+        if (container) container.innerHTML = "";
+      };
 
-        if (window.restaurantsData.length === 0) {
-          // طالما لم تظهر أي مطاعم، نستمر في عرض شاشة التحميل + المؤقت.
-          // هذا يسمح للعميل باستخدام إعادة التحميل اليدوية بعد 15 ثانية.
-          container.innerHTML = `
-            <div
-              id="restaurants-loading-recovery"
-              class="restaurants-loading-recovery text-center py-7 text-gray-400 text-xs bg-white rounded-2xl p-5 border border-gray-100 shadow-sm"
-            >
-              <div class="restaurants-loading-spinner mb-4"></div>
-              <div class="font-extrabold text-sm text-brand-black">
-                جاري تحميل المطاعم...
-              </div>
-              <div class="text-[11px] mt-1 text-gray-400">
-                وصّلها BM بتجهزلك الدنيا 😉
-              </div>
+      window.renderCategoriesHome = function () {
+        const loading = document.getElementById("home-loading-state");
+        const cats = document.getElementById("categories-home-section");
+        const catRestaurants = document.getElementById("category-restaurants-section");
+        const resultsTitle = document.getElementById("restaurants-results-title");
+        const container = document.getElementById("restaurants-list-container");
+        const categoriesContainer = document.getElementById("categories-list-container");
+        if (loading) loading.classList.add("hidden");
+        if (cats) cats.classList.remove("hidden");
+        if (catRestaurants) catRestaurants.classList.add("hidden");
+        if (resultsTitle) resultsTitle.classList.add("hidden");
+        if (container) container.innerHTML = "";
+        if (!categoriesContainer) return;
 
-              <button
-                id="restaurants-refresh-btn"
-                type="button"
-                onclick="refreshRestaurantsAfterLoadingTimeout()"
-                disabled
-                class="mt-5 w-full bg-brand-black text-brand-yellow font-extrabold py-3 px-4 rounded-2xl text-sm shadow-md opacity-50 cursor-not-allowed transition"
-              >
-                اضغط هنا في حال عدم ظهور المطاعم
-              </button>
-
-              <div class="mt-4 text-gray-400 text-[11px] font-semibold">
-                يمكنك إعادة التحميل إذا لم تظهر المطاعم بعد انتهاء المؤقت
-              </div>
-              <div
-                id="restaurants-loading-timer"
-                class="restaurants-loading-timer mt-2 text-brand-black"
-              >
-                ${Math.max(0, restaurantsLoadingCountdown)}
-              </div>
-              <div class="text-[10px] text-gray-400 mt-1">
-                ثانية
-              </div>
-            </div>
-          `;
-          updateRestaurantsLoadingRecoveryUI();
+        const categories = window.sortCategoriesForDisplay(window.categoriesData);
+        if (categories.length === 0) {
+          categoriesContainer.innerHTML = `<div class="col-span-2 bg-white rounded-2xl border border-gray-100 p-6 text-center text-gray-400 text-xs">لا توجد أقسام متاحة حالياً.</div>`;
           return;
         }
 
-        const query = window.searchQuery;
-        let filtered = window.restaurantsData.filter((rest) => {
-          if (!query) return true;
+        categoriesContainer.innerHTML = categories.map((category) => `
+          <button type="button" onclick="openCategory('${category.id}')" class="text-right bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:border-brand-yellow transition active:scale-[.98]">
+            <div class="h-28 bg-gray-100 overflow-hidden">
+              <img src="${category.image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352'}" alt="${category.name || 'قسم'}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1498837167922-ddd27525d352'" />
+            </div>
+            <div class="p-3">
+              <p class="font-extrabold text-sm text-brand-black truncate">${category.name || "قسم بدون اسم"}</p>
+              <p class="text-[10px] text-gray-400 mt-1">${Array.isArray(category.restaurantIds) ? category.restaurantIds.length : 0} مطعم</p>
+            </div>
+          </button>
+        `).join("");
+        if (window.lucide) lucide.createIcons();
+      };
 
-          // البحث باسم المطعم
-          const nameMatch =
-            rest.name && rest.name.toLowerCase().includes(query);
+      window.renderRestaurantCards = function (restaurants, title = "") {
+        const loading = document.getElementById("home-loading-state");
+        const cats = document.getElementById("categories-home-section");
+        const catRestaurants = document.getElementById("category-restaurants-section");
+        const resultsTitle = document.getElementById("restaurants-results-title");
+        const container = document.getElementById("restaurants-list-container");
+        if (loading) loading.classList.add("hidden");
+        if (cats) cats.classList.add("hidden");
+        if (catRestaurants) catRestaurants.classList.remove("hidden");
+        if (resultsTitle) resultsTitle.textContent = title || "المطاعم";
+        if (resultsTitle) resultsTitle.classList.remove("hidden");
+        if (!container) return;
 
-          // البحث في الوجبات المضافة للمطعم
-          const menuMatch =
-            rest.menu &&
-            rest.menu.some((item) => {
-              const itemNameMatch =
-                item.name && item.name.toLowerCase().includes(query);
-              const itemDescMatch =
-                item.desc && item.desc.toLowerCase().includes(query);
-              return itemNameMatch || itemDescMatch;
-            });
-
-          return nameMatch || menuMatch;
-        });
-
-        filtered = sortRestaurantsForDisplay(filtered);
-
-        if (filtered.length === 0) {
-          container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs bg-white rounded-2xl p-4">لا توجد نتائج بحث مطابقة لـ "${query}"</div>`;
+        if (restaurants.length === 0) {
+          container.innerHTML = `<div class="text-center py-8 text-gray-400 text-xs bg-white rounded-2xl p-5">لا توجد مطاعم داخل هذا القسم حالياً.</div>`;
           return;
         }
 
         let html = "";
-        filtered.forEach((rest) => {
+        restaurants.forEach((rest) => {
           const isClosed = rest.isClosed === true;
           const statusBadge = isClosed
             ? `<span class="bg-red-100 text-red-600 px-2.5 py-1 rounded-lg text-[10px] font-bold">مغلق حالياً</span>`
             : `<span class="bg-green-100 text-green-700 px-2.5 py-1 rounded-lg text-[10px] font-bold">مفتوح للطلب</span>`;
-
-          // إظهار أبرز الوجبات المطابقة عند البحث بكلمة وجبة
-          let matchedItemsHtml = "";
-          if (query && rest.menu) {
-            const matchedItems = rest.menu.filter(
-              (i) =>
-                (i.name && i.name.toLowerCase().includes(query)) ||
-                (i.desc && i.desc.toLowerCase().includes(query))
-            );
-            if (matchedItems.length > 0) {
-              const names = matchedItems.map((i) => i.name).join(" • ");
-              matchedItemsHtml = `<p class="text-[10px] text-brand-yellow bg-brand-black/90 px-2 py-0.5 rounded-md mt-1 truncate max-w-[200px]">يحتوي على: ${names}</p>`;
-            }
-          }
-
           html += `
-            <div onclick="selectRestaurant('${
-              rest.id
-            }')" class="bg-white rounded-2xl p-3 border border-gray-100 shadow-sm flex items-center justify-between cursor-pointer hover:border-brand-yellow transition">
-                <div class="flex items-center gap-3">
-                    <img src="${
-                      rest.image ||
-                      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5"
-                    }" class="w-16 h-16 rounded-xl object-cover" alt="${
-            rest.name
-          }">
-                    <div>
-                        <h3 class="font-extrabold text-sm text-brand-black">${
-                          rest.name
-                        }</h3>
-                        <p class="text-[11px] text-gray-500 mt-0.5">اضغط لاستعراض المنيو والطلب</p>
-                        ${matchedItemsHtml}
-                    </div>
+            <button type="button" onclick="selectRestaurant('${rest.id}')" class="w-full text-right bg-white p-3 rounded-2xl border border-gray-100 shadow-sm hover:border-brand-yellow transition active:scale-[.99]">
+              <div class="flex items-center gap-3">
+                <div class="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 shrink-0">
+                  <img src="${rest.image || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5'}" alt="${rest.name || 'مطعم'}" class="w-full h-full object-cover" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5'" />
                 </div>
-                <div>${statusBadge}</div>
-            </div>
-          `;
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center justify-between gap-2">
+                    <h3 class="font-extrabold text-sm text-gray-900 truncate">${rest.name || "مطعم"}</h3>
+                    ${statusBadge}
+                  </div>
+                  <p class="text-[11px] text-gray-500 mt-1">اضغط لاستعراض المنيو والطلب</p>
+                </div>
+              </div>
+            </button>`;
         });
         container.innerHTML = html;
         if (window.lucide) lucide.createIcons();
+      };
+
+      window.openCategory = function (categoryId) {
+        if (window.restaurantsLoading || window.categoriesLoading) return;
+        const category = window.categoriesData.find((c) => c.id === categoryId);
+        if (!category) return;
+        window.selectedCategoryId = categoryId;
+        const ids = Array.isArray(category.restaurantIds) ? category.restaurantIds : [];
+        const restaurants = sortRestaurantsForDisplay(window.restaurantsData.filter((r) => ids.includes(r.id)));
+        const title = category.name || "المطاعم";
+        const titleEl = document.getElementById("selected-category-title");
+        if (titleEl) titleEl.textContent = title;
+        window.renderRestaurantCards(restaurants, title);
+      };
+
+      window.backToCategories = function () {
+        window.selectedCategoryId = null;
+        window.searchQuery = "";
+        const input = document.getElementById("search-input");
+        if (input) input.value = "";
+        renderRestaurantsList();
+      };
+
+      function containerExists(id) { return !!document.getElementById(id); }
+
+      window.renderRestaurantsList = function () {
+        const banner = document.getElementById("firebase-error-banner");
+        if (!containerExists("restaurants-list-container")) return;
+        const hasError = window.restaurantsLoadError || window.categoriesLoadError;
+        if (hasError) {
+          if (banner) banner.classList.remove("hidden");
+        } else if (banner) {
+          banner.classList.add("hidden");
+        }
+        if (window.restaurantsLoading || window.categoriesLoading) {
+          window.renderHomeLoadingState();
+          return;
+        }
+        const query = window.searchQuery || "";
+        if (query) {
+          const filtered = sortRestaurantsForDisplay(window.restaurantsData.filter((rest) => {
+            const nameMatch = rest.name && String(rest.name).toLowerCase().includes(query);
+            const menuMatch = Array.isArray(rest.menu) && rest.menu.some((item) => {
+              const itemNameMatch = item.name && String(item.name).toLowerCase().includes(query);
+              const itemDescMatch = item.desc && String(item.desc).toLowerCase().includes(query);
+              return itemNameMatch || itemDescMatch;
+            });
+            return nameMatch || menuMatch;
+          }));
+          window.renderRestaurantCards(filtered, `نتائج البحث عن "${query}"`);
+          return;
+        }
+        if (window.selectedCategoryId) {
+          const category = window.categoriesData.find((c) => c.id === window.selectedCategoryId);
+          if (category) {
+            const ids = Array.isArray(category.restaurantIds) ? category.restaurantIds : [];
+            window.renderRestaurantCards(sortRestaurantsForDisplay(window.restaurantsData.filter((r) => ids.includes(r.id))), category.name || "المطاعم");
+            return;
+          }
+          window.selectedCategoryId = null;
+        }
+        window.renderCategoriesHome();
       };
 
       window.selectRestaurant = function (restId) {
@@ -2421,10 +2491,9 @@
         document.getElementById("back-btn").classList.add("hidden");
         window.currentRestaurantId = null;
         window.restaurantMenuSearchQuery = "";
-        const restaurantMenuSearchInput = document.getElementById(
-          "restaurant-menu-search-input"
-        );
+        const restaurantMenuSearchInput = document.getElementById("restaurant-menu-search-input");
         if (restaurantMenuSearchInput) restaurantMenuSearchInput.value = "";
+        renderRestaurantsList();
       };
 
       window.handleRestaurantMenuSearchInput = function () {
@@ -3450,8 +3519,10 @@
         const ordersBtn = document.getElementById("tab-orders-btn");
         const menuBtn = document.getElementById("tab-menu-btn");
         const settingsBtn = document.getElementById("tab-settings-btn");
+        const categoriesBtn = document.getElementById("tab-categories-btn");
         const ordersSec = document.getElementById("merchant-orders-section");
         const menuSec = document.getElementById("merchant-menu-section");
+        const categoriesSec = document.getElementById("merchant-categories-section");
         const settingsSec = document.getElementById(
           "merchant-settings-section"
         );
@@ -3461,9 +3532,11 @@
           "flex-1 py-2 rounded-xl text-xs font-bold bg-brand-black text-brand-yellow shadow";
         ordersBtn.className = inactive;
         menuBtn.className = inactive;
+        if (categoriesBtn) categoriesBtn.className = inactive;
         if (settingsBtn) settingsBtn.className = inactive;
         ordersSec.classList.add("hidden");
         menuSec.classList.add("hidden");
+        if (categoriesSec) categoriesSec.classList.add("hidden");
         settingsSec.classList.add("hidden");
         if (tabName === "orders") {
           ordersBtn.className = active;
@@ -3471,10 +3544,226 @@
         } else if (tabName === "menu") {
           menuBtn.className = active;
           menuSec.classList.remove("hidden");
+        } else if (tabName === "categories") {
+          if (categoriesBtn) categoriesBtn.className = active;
+          if (categoriesSec) categoriesSec.classList.remove("hidden");
+          renderNewCategoryRestaurantChoices();
+          renderMerchantCategories();
         } else if (tabName === "settings") {
           if (settingsBtn) settingsBtn.className = active;
           settingsSec.classList.remove("hidden");
           loadMerchantCredentialsSettings();
+        }
+      };
+
+      function categoryHasDisplayOrder(category) {
+        return Number.isInteger(Number(category.displayOrder)) && Number(category.displayOrder) >= 1;
+      }
+
+      function categoryCreationTime(category) {
+        return Number(category.createdAt) || Number.MAX_SAFE_INTEGER;
+      }
+
+      async function persistCategoriesToSettings(categories) {
+        if (!window.settingsDocRef) throw new Error("Firebase settings document is unavailable");
+        const cleanCategories = (categories || []).map((category, index) => ({
+          id: String(category.id || `category_${Date.now()}_${index}`),
+          name: String(category.name || ""),
+          image: category.image || "https://images.unsplash.com/photo-1498837167922-ddd27525d352",
+          restaurantIds: Array.isArray(category.restaurantIds) ? category.restaurantIds : [],
+          displayOrder: category.displayOrder == null ? null : Number(category.displayOrder),
+          createdAt: Number(category.createdAt) || Date.now(),
+        }));
+        await setDoc(window.settingsDocRef, { categories: cleanCategories }, { merge: true });
+        window.categoriesData = cleanCategories.map((category, index) => ({
+          ...category,
+          __categorySnapshotIndex: index,
+        }));
+        window.categoriesLoading = false;
+        window.categoriesLoadError = null;
+        renderRestaurantsList();
+        renderMerchantCategories();
+      }
+
+      async function saveCategoryDisplayOrder(orderedCategories, unrankedCategories = []) {
+        const ordered = (orderedCategories || []).map((category, index) => ({
+          ...category,
+          displayOrder: index + 1,
+        }));
+        const unranked = (unrankedCategories || []).map((category) => ({
+          ...category,
+          displayOrder: null,
+        }));
+        const combined = [...ordered, ...unranked];
+        await persistCategoriesToSettings(combined);
+      }
+
+      window.renderNewCategoryRestaurantChoices = function () {
+        const container = document.getElementById("new-category-restaurants-list");
+        if (!container) return;
+        const restaurants = sortRestaurantsForDisplay(window.restaurantsData || []);
+        if (!restaurants.length) {
+          container.innerHTML = `<p class="text-gray-400 text-center py-2">لا توجد مطاعم متاحة للاختيار حالياً.</p>`;
+          return;
+        }
+        container.innerHTML = restaurants.map((rest) => `
+          <label class="flex items-center gap-2 bg-white border border-gray-100 rounded-xl p-2 cursor-pointer">
+            <input type="checkbox" class="new-category-restaurant-checkbox accent-brand-yellow w-4 h-4" value="${rest.id}" />
+            <div class="w-9 h-9 rounded-lg overflow-hidden bg-gray-100 shrink-0"><img src="${rest.image || 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5'}" class="w-full h-full object-cover" /></div>
+            <span class="font-bold text-xs text-gray-800 truncate flex-1">${rest.name || "مطعم"}</span>
+          </label>
+        `).join("");
+      };
+
+      function getSelectedCategoryRestaurantIds(container) {
+        if (!container) return [];
+        return [...container.querySelectorAll("input[type=checkbox]:checked")].map((input) => input.value);
+      }
+
+      window.createCategory = async function () {
+        const nameInput = document.getElementById("new-category-name");
+        const imageInput = document.getElementById("new-category-image");
+        const orderInput = document.getElementById("new-category-display-order");
+        const fileInput = document.getElementById("new-category-file");
+        const name = nameInput ? nameInput.value.trim() : "";
+        const imageUrl = imageInput ? imageInput.value.trim() : "";
+        const displayOrder = orderInput ? orderInput.value.trim() : "";
+        const restaurantIds = getSelectedCategoryRestaurantIds(document.getElementById("new-category-restaurants-list"));
+        if (!name) return alert("يرجى إدخال اسم القسم.");
+        const parsedOrder = displayOrder !== "" ? parseInt(displayOrder, 10) : null;
+        if (displayOrder !== "" && (!Number.isInteger(parsedOrder) || parsedOrder < 1)) return alert("ترتيب القسم يجب أن يكون رقماً صحيحاً أكبر من أو يساوي 1.");
+
+        const save = async (finalImage) => {
+          try {
+            const existing = [...window.categoriesData];
+            const ranked = window.sortCategoriesForDisplay(existing.filter(categoryHasDisplayOrder));
+            const unranked = window.sortCategoriesForDisplay(existing.filter((c) => !categoryHasDisplayOrder(c)));
+            const newCategory = {
+              id: (window.crypto && typeof window.crypto.randomUUID === "function")
+                ? window.crypto.randomUUID()
+                : `category_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`,
+              name,
+              image: finalImage || "https://images.unsplash.com/photo-1498837167922-ddd27525d352",
+              restaurantIds,
+              displayOrder: parsedOrder,
+              createdAt: Date.now(),
+            };
+            if (parsedOrder !== null) {
+              const targetIndex = Math.min(Math.max(parsedOrder, 1), ranked.length + 1) - 1;
+              ranked.splice(targetIndex, 0, newCategory);
+              await saveCategoryDisplayOrder(ranked);
+            } else {
+              await saveCategoryDisplayOrder(ranked, [...unranked, newCategory]);
+            }
+            if (nameInput) nameInput.value = "";
+            if (imageInput) imageInput.value = "";
+            if (orderInput) orderInput.value = "";
+            if (fileInput) fileInput.value = "";
+            renderNewCategoryRestaurantChoices();
+            showActionSuccessModal(`تم إضافة القسم "${name}" بنجاح.`, "تم إضافة القسم بنجاح");
+          } catch (err) {
+            console.error("createCategory error:", err);
+            alert(`حدث خطأ أثناء إضافة القسم. ${getFirebaseErrorMessage(err)}`);
+          }
+        };
+        if (fileInput?.files?.[0]) {
+          compressAndConvertImage(fileInput.files[0], save);
+        } else {
+          await save(imageUrl);
+        }
+      };
+
+      window.renderMerchantCategories = function () {
+        const container = document.getElementById("merchant-categories-list");
+        if (!container) return;
+        const categories = window.sortCategoriesForDisplay(window.categoriesData || []);
+        if (!categories.length) {
+          container.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs bg-gray-50 rounded-xl">لم يتم إنشاء أقسام بعد.</div>`;
+          return;
+        }
+        container.innerHTML = categories.map((category) => {
+          const selected = new Set(Array.isArray(category.restaurantIds) ? category.restaurantIds : []);
+          const restaurantChecks = sortRestaurantsForDisplay(window.restaurantsData || []).map((rest) => `
+            <label class="flex items-center gap-2 bg-white border border-gray-100 rounded-xl p-2 cursor-pointer">
+              <input type="checkbox" class="category-restaurant-checkbox w-4 h-4" value="${rest.id}" ${selected.has(rest.id) ? "checked" : ""} />
+              <span class="text-xs font-bold text-gray-800 truncate">${rest.name || "مطعم"}</span>
+            </label>
+          `).join("");
+          return `
+            <div class="border border-gray-200 rounded-2xl p-3 space-y-3 bg-gray-50" data-category-id="${category.id}">
+              <div class="flex items-center gap-3">
+                <div class="w-14 h-14 rounded-xl overflow-hidden bg-gray-200 shrink-0"><img src="${category.image || 'https://images.unsplash.com/photo-1498837167922-ddd27525d352'}" class="w-full h-full object-cover" /></div>
+                <div class="min-w-0 flex-1"><p class="font-extrabold text-sm text-brand-black truncate">${category.name || "قسم"}</p><p class="text-[10px] text-gray-500 mt-1">ترتيب: ${category.displayOrder ?? "بدون"} • ${selected.size} مطعم</p></div>
+                <button type="button" onclick="deleteCategory('${category.id}')" class="text-red-500 bg-red-50 px-2 py-1.5 rounded-lg text-[10px] font-bold">حذف</button>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <input id="category-name-${category.id}" value="${String(category.name || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" class="border rounded-xl p-2.5 text-xs" placeholder="اسم القسم" />
+                <input id="category-order-${category.id}" value="${category.displayOrder ?? ''}" type="number" min="1" step="1" class="border rounded-xl p-2.5 text-xs" placeholder="الترتيب" />
+              </div>
+              <input id="category-image-${category.id}" value="${String(category.image || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" class="w-full border rounded-xl p-2.5 text-xs" placeholder="رابط الصورة" />
+              <input id="category-file-${category.id}" type="file" accept="image/*" class="w-full border rounded-xl p-2 text-[10px] bg-white" />
+              <div><p class="font-bold text-[11px] text-gray-600 mb-2">المطاعم داخل القسم:</p><div class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">${restaurantChecks || '<p class="col-span-2 text-gray-400 text-center text-[10px]">لا توجد مطاعم.</p>'}</div></div>
+              <button type="button" onclick="updateCategory('${category.id}')" class="w-full bg-brand-black text-brand-yellow font-extrabold py-2.5 rounded-xl text-xs">حفظ تعديلات القسم</button>
+            </div>`;
+        }).join("");
+      };
+
+      window.updateCategory = async function (categoryId) {
+        const category = window.categoriesData.find((c) => c.id === categoryId);
+        if (!category) return;
+        const name = document.getElementById(`category-name-${categoryId}`)?.value.trim() || "";
+        const imageUrl = document.getElementById(`category-image-${categoryId}`)?.value.trim() || "";
+        const orderValue = document.getElementById(`category-order-${categoryId}`)?.value.trim() || "";
+        const fileInput = document.getElementById(`category-file-${categoryId}`);
+        if (!name) return alert("اسم القسم مطلوب.");
+        const parsedOrder = orderValue !== "" ? parseInt(orderValue, 10) : null;
+        if (orderValue !== "" && (!Number.isInteger(parsedOrder) || parsedOrder < 1)) return alert("ترتيب القسم يجب أن يكون رقماً صحيحاً أكبر من أو يساوي 1.");
+        const box = document.querySelector(`[data-category-id="${categoryId}"]`);
+        const restaurantIds = box ? [...box.querySelectorAll(".category-restaurant-checkbox:checked")].map((el) => el.value) : [];
+        const save = async (finalImage) => {
+          try {
+            const others = window.categoriesData.filter((c) => c.id !== categoryId);
+            const ranked = window.sortCategoriesForDisplay(others.filter(categoryHasDisplayOrder));
+            const unranked = window.sortCategoriesForDisplay(others.filter((c) => !categoryHasDisplayOrder(c)));
+            const updatedCategory = {
+              ...category,
+              id: categoryId,
+              name,
+              image: finalImage || "https://images.unsplash.com/photo-1498837167922-ddd27525d352",
+              restaurantIds,
+              displayOrder: parsedOrder,
+            };
+            if (parsedOrder !== null) {
+              const targetIndex = Math.min(Math.max(parsedOrder, 1), ranked.length + 1) - 1;
+              ranked.splice(targetIndex, 0, updatedCategory);
+              await saveCategoryDisplayOrder(ranked);
+            } else {
+              await saveCategoryDisplayOrder(ranked, [...unranked, updatedCategory].sort((a,b) => categoryCreationTime(a)-categoryCreationTime(b)));
+            }
+            showAppToast("تم تعديل القسم بنجاح.");
+          } catch (err) {
+            console.error("updateCategory error:", err);
+            alert(`حدث خطأ أثناء تعديل القسم. ${getFirebaseErrorMessage(err)}`);
+          }
+        };
+        if (fileInput?.files?.[0]) compressAndConvertImage(fileInput.files[0], save);
+        else await save(imageUrl);
+      };
+
+      window.deleteCategory = async function (categoryId) {
+        const category = window.categoriesData.find((c) => c.id === categoryId);
+        if (!category) return;
+        if (!(await showDeleteConfirmation(`هل أنت متأكد من حذف القسم "${category.name || ''}" نهائياً؟`))) return;
+        try {
+          const remaining = window.categoriesData.filter((c) => c.id !== categoryId);
+          const ranked = window.sortCategoriesForDisplay(remaining.filter(categoryHasDisplayOrder));
+          const unranked = window.sortCategoriesForDisplay(remaining.filter((c) => !categoryHasDisplayOrder(c)));
+          await saveCategoryDisplayOrder(ranked, unranked);
+          if (window.selectedCategoryId === categoryId) window.selectedCategoryId = null;
+          showAppToast("تم حذف القسم بنجاح.");
+        } catch (err) {
+          console.error("deleteCategory error:", err);
+          alert(`حدث خطأ أثناء حذف القسم. ${getFirebaseErrorMessage(err)}`);
         }
       };
 
@@ -4340,6 +4629,8 @@
               container.innerHTML =
                 '<p class="text-red-500 text-center py-4">حدث خطأ أثناء جلب التقييمات.</p>';
             }
+          }, (error) => {
+            console.error("Firebase reviews listener error:", error);
           }
         );
       };
@@ -4988,6 +5279,8 @@
         if (typeof initApp === "function") {
           initApp();
         }
+        renderNewCategoryRestaurantChoices();
+        renderMerchantCategories();
         updateCartBar();
       });
     </script>
